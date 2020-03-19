@@ -1,0 +1,104 @@
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.urls import reverse
+
+
+class User(AbstractUser):
+    pass
+
+
+class Articles(models.Model):
+    art3038 = models.SmallIntegerField(blank=True)
+    art3039 = models.SmallIntegerField(blank=True)
+    art4118 = models.SmallIntegerField(blank=True)
+    art4119 = models.SmallIntegerField(blank=True)
+    art4128 = models.SmallIntegerField(blank=True)
+    art4129 = models.SmallIntegerField(blank=True)
+    art4178 = models.SmallIntegerField(blank=True)
+    art4179 = models.SmallIntegerField(blank=True)
+    art4218 = models.SmallIntegerField(blank=True)
+    art4219 = models.SmallIntegerField(blank=True)
+    art4308 = models.SmallIntegerField(blank=True)
+    art4309 = models.SmallIntegerField(blank=True)
+    art4388 = models.SmallIntegerField(blank=True)
+    art4389 = models.SmallIntegerField(blank=True)
+    art4398 = models.SmallIntegerField(blank=True)
+    art4399 = models.SmallIntegerField(blank=True)
+    art4418 = models.SmallIntegerField(blank=True)
+    art4419 = models.SmallIntegerField(blank=True)
+    art4428 = models.SmallIntegerField(blank=True)
+    art4429 = models.SmallIntegerField(blank=True)
+    art4518 = models.SmallIntegerField(blank=True)
+    art4519 = models.SmallIntegerField(blank=True)
+    art4618 = models.SmallIntegerField(blank=True)
+    art4619 = models.SmallIntegerField(blank=True)
+    art6068 = models.SmallIntegerField(blank=True)
+    art6069 = models.SmallIntegerField(blank=True)
+
+    class Meta:
+        abstract = True
+
+    def value(self):
+        return self.art3038 + self.art3039 + self.art4118 + self.art4119 + self.art4128 + self.art4129 + self.art4178 + \
+               self.art4218 + self.art4219 + self.art4308 + self.art4309 + self.art4388 + self.art4389 + self.art4398 + \
+               self.art4399 + self.art4418 + self.art4419 + self.art4428 + self.art4429 + self.art4518 + self.art4519 + \
+               self.art4618 + self.art4619 + self.art6068 + self.art6069
+
+
+class Task(Articles):
+    title = models.CharField(max_length=128, unique=True)
+    description = models.CharField(max_length=256)
+    unit = models.SmallIntegerField()
+    section = models.SmallIntegerField()
+
+    def __str__(self):
+        return f'Title {self.title}, unit {self.unit}, section {self.section}, value {self.value}'
+
+    def get_absolute_url(self):
+        return reverse('budget:task_details', kwargs={'task_id': self.pk})
+
+    class Meta:
+        default_related_name = 'task'
+
+class Contract(Articles):
+    number = models.CharField(max_length=128)
+    date = models.DateField()
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='contracts', related_query_name='contract')
+
+    def __str__(self):
+        return f'number {self.number}, date {self.date}'
+
+    def get_absolute_url(self):
+        return reverse('budget:contract_details', kwargs={'contract_id': self.pk})
+
+    class Meta:
+        default_related_name = 'contract'
+
+class Contractor(models.Model):
+    name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    _id = models.SmallIntegerField()
+    contracts = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='contractors', related_query_name='contractor')
+
+    def get_absolute_url(self):
+        return reverse('budget:contractor_details', kwargs={'contractor_id': self.pk})
+
+    def __str__(self):
+        return f'{self.name} {self.last_name}'
+
+    class Meta:
+        default_related_name = 'contractors'
+
+
+class FinancialDocument(Articles):
+    # task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='fds', related_query_name='fd')
+    date = models.DateField()
+    payment_date1 = models.DateField(blank=True)
+    payment_date12 = models.DateField(blank=True)
+
+    def get_absolute_url(self):
+        return reverse('budget:fd_details', kwargs={'fd_id': self.pk})
+
+    class Meta:
+        default_related_name = 'fds'
