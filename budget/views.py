@@ -15,7 +15,11 @@ class TasksView(ListView):
     context_object_name = 'tasks'
 
 class TaskDetailsView(DetailView):
-    pass
+    model = Task
+    template_name = 'budget/task.html'
+    context_object_name = 'task'
+    pk_url_kwarg = 'task_id'
+
 
 class AddTaskView(CreateView):
     pass
