@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
 
-AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'budget.User'
 
 LANGUAGE_CODE = 'en-us'
 

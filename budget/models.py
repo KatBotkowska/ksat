@@ -8,35 +8,36 @@ class User(AbstractUser):
 
 
 class Articles(models.Model):
-    art3038 = models.SmallIntegerField(blank=True)
-    art3039 = models.SmallIntegerField(blank=True)
-    art4118 = models.SmallIntegerField(blank=True)
-    art4119 = models.SmallIntegerField(blank=True)
-    art4128 = models.SmallIntegerField(blank=True)
-    art4129 = models.SmallIntegerField(blank=True)
-    art4178 = models.SmallIntegerField(blank=True)
-    art4179 = models.SmallIntegerField(blank=True)
-    art4218 = models.SmallIntegerField(blank=True)
-    art4219 = models.SmallIntegerField(blank=True)
-    art4308 = models.SmallIntegerField(blank=True)
-    art4309 = models.SmallIntegerField(blank=True)
-    art4388 = models.SmallIntegerField(blank=True)
-    art4389 = models.SmallIntegerField(blank=True)
-    art4398 = models.SmallIntegerField(blank=True)
-    art4399 = models.SmallIntegerField(blank=True)
-    art4418 = models.SmallIntegerField(blank=True)
-    art4419 = models.SmallIntegerField(blank=True)
-    art4428 = models.SmallIntegerField(blank=True)
-    art4429 = models.SmallIntegerField(blank=True)
-    art4518 = models.SmallIntegerField(blank=True)
-    art4519 = models.SmallIntegerField(blank=True)
-    art4618 = models.SmallIntegerField(blank=True)
-    art4619 = models.SmallIntegerField(blank=True)
-    art6068 = models.SmallIntegerField(blank=True)
-    art6069 = models.SmallIntegerField(blank=True)
+    art3038 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art3039 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4118 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4119 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4128 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4129 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4178 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4179 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4218 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4219 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4308 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4309 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4388 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4389 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4398 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4399 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4418 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4419 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4428 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4429 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4518 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4519 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4618 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art4619 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art6068 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    art6069 = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
 
     class Meta:
         abstract = True
+        verbose_name = 'article'
 
     def value(self):
         return self.art3038 + self.art3039 + self.art4118 + self.art4119 + self.art4128 + self.art4129 + self.art4178 + \
@@ -59,6 +60,8 @@ class Task(Articles):
 
     class Meta:
         default_related_name = 'task'
+        ordering = ('title',)
+        verbose_name = 'task'
 
 class Contract(Articles):
     number = models.CharField(max_length=128)
@@ -73,11 +76,13 @@ class Contract(Articles):
 
     class Meta:
         default_related_name = 'contract'
+        ordering = ('number',)
+        verbose_name = 'contract'
 
 class Contractor(models.Model):
     name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
-    _id = models.SmallIntegerField()
+    _id = models.SmallIntegerField(blank=True)
     contracts = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='contractors', related_query_name='contractor')
 
     def get_absolute_url(self):
@@ -88,6 +93,8 @@ class Contractor(models.Model):
 
     class Meta:
         default_related_name = 'contractors'
+        ordering = ('last_name',)
+        verbose_name = 'contractor'
 
 
 class FinancialDocument(Articles):
@@ -95,10 +102,11 @@ class FinancialDocument(Articles):
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='fds', related_query_name='fd')
     date = models.DateField()
     payment_date1 = models.DateField(blank=True)
-    payment_date12 = models.DateField(blank=True)
+    payment_date2 = models.DateField(blank=True)
 
     def get_absolute_url(self):
         return reverse('budget:fd_details', kwargs={'fd_id': self.pk})
 
     class Meta:
         default_related_name = 'fds'
+        verbose_name = 'finacial_doc'
