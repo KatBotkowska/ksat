@@ -5,19 +5,58 @@
 {% block content %}
     {{ block.super }}
     <h2>Task: {{ task.title }}</h2>
-    <div><b>Task general info:</b>
+    <div><b>General info:</b>
         <ul>
             <li>Unit: {{ task.unit }}</li>
             <li>Section: {{ task.section }}</li>
             <li>Description: {{ task.description }}</li>
             <li>Total value: {{ task.value }}</li>
-            <li>Engagement:</li>
+            <li>Engagement: {{ task.engagement }}</li>
+            <li>Performance: {{ task.task_performance }}</li>
         </ul>
     </div>
     <div>
-    <b>Articles:</b></div>
+        <b>Financial Plan - Articles:</b>
+        {% for article in task.articles_val.items %}
+            <ul>
+                {% if article.1 is not None and article.1  > 0.00%}
+                    <li>{{ article.0 }}: {{ article.1 }}</li>
+                {% endif %}
+            </ul>
+        {% endfor %}
+
+    </div>
     <div>
-    <b>Contracts:</b></div>
+        <b>Contracts:</b>
+        <table border="bold">
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Number</td>
+                <td>Contractor</td>
+                <td>Date</td>
+                <td>Value</td>
+                <td>Performance</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for contract in task.contracts.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{{ contract.get_absolute_url }}">{{ contract.number }}</a></td>
+                    <td>{{ contract.contractor }}</td>
+                    <td>{{ contract.date }}</td>
+                    <td>{{ contract.value }} </td>
+                    <td>{{ contract.contract_performance }}</td>
+                </tr>
+            {% empty %} No contracts for task
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+    <h3><a href="{% url 'budget:edit_task' %}">Edit task</a></h3>
     <h3><a href="{% url 'budget:delete_task' %}">Delete task</a></h3>
 
 
