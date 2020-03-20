@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Delete task</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h3>Confirm delete task: {{ task.title }}</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete task: {{ task.title }}</p>
+        <div><input type="submit" value="Delete"></div>
+    </form>
+
+{% endblock %}

@@ -65,3 +65,12 @@ class AddTaskForm(ModelForm):
         }
         help_texts = articles_fields
 
+class EditTaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'unit', 'section') + tuple(articles_fields.keys())
+        widgets = {
+            'description': Textarea(attrs={'cols': 80, 'rows': 5}),
+        }
+
+

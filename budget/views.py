@@ -1,10 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView, FormView
 from django.views.generic.base import View, TemplateView
 
-from .forms import AddTaskForm
+from .forms import AddTaskForm, EditTaskForm
 
 from .models import Articles, Task, Contractor, Contract, FinancialDocument
 
@@ -42,11 +42,22 @@ class AddTaskView(FormView):
 
 
 class EditTaskView(UpdateView):
-    pass
+    model = Task
+    form_class = EditTaskForm
+    template_name = 'budget/edit_task.html'
+    pk_url_kwarg = 'task_id'
+    success_url = reverse_lazy('budget:task_details')
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
 
 
 class DeleteTaskView(DeleteView):
-    pass
+    model = Task
+    template_name = 'budget/delete_task.html'
+    pk_url_kwarg = 'task_id'
+    success_url = reverse_lazy('budget:tasks')
+
 
 
 class ContractsView(ListView):
