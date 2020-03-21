@@ -1,7 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+        {% block style %}
+            {% comment %}
+        <link rel = 'stylesheet' href="style.css">
+        {% endcomment %}
+        {% endblock %}
+    {% endblock %}
+</head>
+<body>
 {% block header %}
-            <head><meta charset="utf-8"></head>
+    <head>
+        <meta charset="utf-8">
+    </head>
 {% endblock %}
 {% block content %}
-                <h1>Ksat - for managing project budget</h1>
+    <h1>Ksat - for managing project budget</h1>
 
 {% endblock %}
+
+{% block footer %}
+    <div>
+        <strong> Today is: {{ now }} | version: {{ version }}</strong>
+    </div>
+    <div>
+        Copyright 2020 by KateB
+    </div>
+{% endblock %}
+</body>
+</html>
