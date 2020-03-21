@@ -15,6 +15,8 @@ class IndexView(TemplateView):
     template_name = 'budget/index.html'
 
 
+# VIEWS FOR TASKS
+
 class TasksView(ListView):
     model = Task
     template_name = 'budget/tasks.html'
@@ -59,13 +61,19 @@ class DeleteTaskView(DeleteView):
     success_url = reverse_lazy('budget:tasks')
 
 
+# VIEWS FOR CONTRACTS
 
 class ContractsView(ListView):
-    pass
+    model = Contract
+    template_name = 'budget/contracts.html'
+    context_object_name = 'contracts'
 
 
 class ContractDetailsView(DetailView):
-    pass
+    model = Contract
+    template_name = 'budget/contract.html'
+    pk_url_kwarg = 'contract_id'
+    context_object_name = 'contract'
 
 
 class AddContractView(CreateView):
@@ -77,4 +85,48 @@ class EditContractView(UpdateView):
 
 
 class DeleteContractView(DeleteView):
+    pass
+
+
+# VIEWS FOR CONTRACTOR
+
+class ContractorView(ListView):
+    pass
+
+
+class ContractorDetailsView(DetailView):
+    pass
+
+
+class AddContractorView(CreateView):
+    pass
+
+
+class EditContractorView(UpdateView):
+    pass
+
+
+class DeleteContractorView(DeleteView):
+    pass
+
+
+# VIEWS FOR FINANCIAL DOCUMENTS
+
+class FinancialDocView(ListView):
+    pass
+
+
+class FinancialDocDetailsView(DetailView):
+    pass
+
+
+class AddFinancialDocView(CreateView):
+    pass
+
+
+class EditFinancialDocView(UpdateView):
+    pass
+
+
+class DeleteFinancialDocView(DeleteView):
     pass

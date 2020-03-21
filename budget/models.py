@@ -225,7 +225,7 @@ class FinancialDocument(Articles):
     payment_date2 = models.DateField(blank=True, null=True)
 
     def get_absolute_url(self):
-        return reverse('budget:fd_details', kwargs={'fd_id': self.pk})
+        return reverse('budget:doc_details', kwargs={'fd_id': self.pk})
 
     class Meta:
         default_related_name = 'fds'

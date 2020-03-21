@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Contracts</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h2>Contracts</h2>
+        <table border="bold">
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Number</td>
+                <td>Date</td>
+                <td>Task</td>
+                <td>Contractor</td>
+                <td>Value</td>
+                <td>Performance</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for contract in contracts %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{{ contract.get_absolute_url }}">{{ contract.number }}</a></td>
+                    <td>{{ contract.date }}</td>
+                    <td>{{ contract.task }}</td>
+                    <td>{{ contract.contractor }} </td>
+                    <td>{{ contract.value }}</td>
+                    <td>{{ contract.contract_performance }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    <h3><a href="{% url 'budget:add_contract' %}">Add new contract</a></h3>
+
+
+{% endblock %}

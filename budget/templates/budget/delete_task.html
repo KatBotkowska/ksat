@@ -10,5 +10,6 @@
         <p>Are you sure you want to delete task: {{ task.title }}</p>
         <div><input type="submit" value="Delete"></div>
     </form>
+    <a href="{% url 'budget:task_details' task.id %}"><button type="submit">No, just kidding!</button></a>
 
 {% endblock %}

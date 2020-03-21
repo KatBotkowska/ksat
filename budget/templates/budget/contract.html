@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Contract {{ contract.number }}</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h2>Contract: {{ contract.number }}</h2>
+    <div><b>General info:</b>
+        <ul>
+            <li>Date: {{ contract.date }}</li>
+            <li>Task: {{ contract.task }}</li>
+            <li>Contractor: {{ contract.contractor }}</li>
+            <li>Total value: {{ contract.value }}</li>
+            <li>Performance: {{ contract.contract_performance }}</li>
+        </ul>
+    </div>
+    <div>
+        <b>Financial Plan - Contract:</b>
+        {% for article in contract.articles_val.items %}
+            <ul>
+                {% if article.1 is not None and article.1  > 0.00%}
+                    <li>{{ article.0 }}: {{ article.1 }}</li>
+                {% endif %}
+            </ul>
+        {% endfor %}
+
+    </div>
+    <div>
+        <b>Financial documents for contract:</b>
+        <table border="bold">
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Number</td>
+                <td>Date</td>
+                <td>Payment date (first)</td>
+                <td>Payment date (second</td>
+                <td>Value</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for fd in contract.fds.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
+                    <td>{{ fd.date }}</td>
+                    <td>{{ fd.payment_date1 }}</td>
+                    <td>{{ fd.payment_date2 }} </td>
+                    <td>{{ fd.value }}</td>
+                </tr>
+            {% empty %} No financial documents for contract
+            {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+    <h3><a href="{% url 'budget:edit_contract' contract.id %}">Edit contract</a></h3>
+    <h3><a href="{% url 'budget:delete_contract' contract.id %}">Delete contract</a></h3>
+
+
+{% endblock %}
