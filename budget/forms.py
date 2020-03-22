@@ -29,6 +29,7 @@ from . models import Task, Contract, Contractor, FinancialDocument
 #         'art6068',
 #         'art6069'
 # )
+#fields description for each article
 articles_fields = {
     'art3038': ('for persons'),
     'art3039': ('for persons'),

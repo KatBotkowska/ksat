@@ -11,8 +11,8 @@ from .models import Articles, Task, Contractor, Contract, FinancialDocument
 
 # Create your views here.
 
-class IndexView(TemplateView):
-    template_name = 'budget/index.html'
+# class IndexView(TemplateView): #przeniesione do  URLS PATTERNS BEZ WIDOKU TUTAJ,
+#     template_name = 'budget/index.html'
 
 
 # VIEWS FOR TASKS
