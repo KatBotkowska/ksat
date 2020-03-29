@@ -30,48 +30,48 @@ from . models import Task, Contract, Contractor, FinancialDocument
 #         'art6069'
 # )
 #fields description for each article
-articles_fields = {
-    'art3038': ('for persons'),
-    'art3039': ('for persons'),
-    'art4118': ('for persons'),
-    'art4119': ('for persons'),
-    'art4128': ('for persons'),
-    'art4129': ('for persons'),
-    'art4178': ('for persons'),
-    'art4179': ('for persons'),
-    'art4218': ('for persons'),
-    'art4219': ('for persons'),
-    'art4308': ('for persons'),
-    'art4309': ('for persons'),
-    'art4388': ('for persons'),
-    'art4389': ('for persons'),
-    'art4398': ('for persons'),
-    'art4399': ('for persons'),
-    'art4418': ('for persons'),
-    'art4419': ('for persons'),
-    'art4428': ('for persons'),
-    'art4518': ('for persons'),
-    'art4519': ('for persons'),
-    'art4618': ('for persons'),
-    'art4619': ('for persons'),
-    'art6068': ('for persons'),
-    'art6069': ('for persons'),
-}
-class AddTaskForm(ModelForm):
-    class Meta:
-        model = Task
-        fields = ('title', 'description', 'unit', 'section') + tuple(articles_fields.keys())
-        widgets = {
-            'description': Textarea(attrs={'cols':80, 'rows': 5}),
-        }
-        help_texts = articles_fields
-
-class EditTaskForm(ModelForm):
-    class Meta:
-        model = Task
-        fields = ('title', 'description', 'unit', 'section') + tuple(articles_fields.keys())
-        widgets = {
-            'description': Textarea(attrs={'cols': 80, 'rows': 5}),
-        }
+# articles_fields = {
+#     'art3038': ('for persons'),
+#     'art3039': ('for persons'),
+#     'art4118': ('for persons'),
+#     'art4119': ('for persons'),
+#     'art4128': ('for persons'),
+#     'art4129': ('for persons'),
+#     'art4178': ('for persons'),
+#     'art4179': ('for persons'),
+#     'art4218': ('for persons'),
+#     'art4219': ('for persons'),
+#     'art4308': ('for persons'),
+#     'art4309': ('for persons'),
+#     'art4388': ('for persons'),
+#     'art4389': ('for persons'),
+#     'art4398': ('for persons'),
+#     'art4399': ('for persons'),
+#     'art4418': ('for persons'),
+#     'art4419': ('for persons'),
+#     'art4428': ('for persons'),
+#     'art4518': ('for persons'),
+#     'art4519': ('for persons'),
+#     'art4618': ('for persons'),
+#     'art4619': ('for persons'),
+#     'art6068': ('for persons'),
+#     'art6069': ('for persons'),
+# }
+# class AddTaskForm(ModelForm):
+#     class Meta:
+#         model = Task
+#         fields = ('title', 'description', 'unit', 'section') + tuple(articles_fields.keys())
+#         widgets = {
+#             'description': Textarea(attrs={'cols':80, 'rows': 5}),
+#         }
+#         help_texts = articles_fields
+#
+# class EditTaskForm(ModelForm):
+#     class Meta:
+#         model = Task
+#         fields = ('title', 'description', 'unit', 'section') + tuple(articles_fields.keys())
+#         widgets = {
+#             'description': Textarea(attrs={'cols': 80, 'rows': 5}),
+#         }
 
 
