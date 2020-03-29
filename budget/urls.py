@@ -23,9 +23,9 @@ urlpatterns = [
     path('add_contractor/', views.AddContractorView.as_view(), name='add_contractor'),
     path('edit_contractor/<int:contractor_id>', views.EditContractorView.as_view(), name='edit_contractor'),
     path('delete_contractor/<int:contractor_id>', views.DeleteContractorView.as_view(), name='delete_contractor'),
-    path('documents/', views.FinancialDocView.as_view(), name='docs'),
-    path('document/<int:fd_id>', views.FinancialDocDetailsView.as_view(), name='doc_details'),
-    path('add_document/', views.AddFinancialDocView.as_view(), name='add_doc'),
+    path('documents/', views.FinancialDocView.as_view(), name='docs'), #TODO <'<int:contract_id>/documents/'
+    path('document/<int:fd_id>', views.FinancialDocDetailsView.as_view(), name='doc_details'),#TODO <'<int:contract_id>/<int:fd_id>'/'
+    path('add_document/', views.AddFinancialDocView.as_view(), name='add_doc'), #the same
     path('edit_document/<int:fd_id>', views.EditFinancialDocView.as_view(), name='edit_doc'),
     path('delete_document/<int:fd_id>', views.DeleteFinancialDocView.as_view(), name='delete_doc'),
 ]
