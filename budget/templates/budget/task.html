@@ -10,18 +10,16 @@
             <li>Unit: {{ task.unit }}</li>
             <li>Section: {{ task.section }}</li>
             <li>Description: {{ task.description }}</li>
-            <li>Total value: {{ task.value }}</li>
+            <li>Total value: {{ task.task_value }}</li>
             <li>Engagement: {{ task.engagement }}</li>
-            <li>Performance: {{ task.task_performance }}</li>
+            <li>Performance: {{ task.performance }}</li>
         </ul>
     </div>
     <div>
         <b>Financial Plan - Articles:</b>
-        {% for article in task.articles_val.items %}
+        {% for article in task.task_articles.all %}
             <ul>
-                {% if article.1 is not None and article.1  > 0.00%}
-                    <li>{{ article.0 }}: {{ article.1 }}</li>
-                {% endif %}
+                <li>{{ article.article.total_number }} - {{ article.value }} PLN</li>
             </ul>
         {% endfor %}
 
@@ -56,6 +54,7 @@
 
 
     </div>
+    <h3><a href="{% url 'budget:task_add_articles' task.id %}">Add articles</a></h3>
     <h3><a href="{% url 'budget:edit_task' task.id %}">Edit task</a></h3>
     <h3><a href="{% url 'budget:delete_task' task.id %}">Delete task</a></h3>
 

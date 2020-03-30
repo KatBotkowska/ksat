@@ -20,7 +20,7 @@ class TaskAdmin(admin.ModelAdmin):
 @admin.register(TaskArticles)
 class TaskArticlesAdmin(admin.ModelAdmin):
     list_display = ['article', 'task', 'value']
-    list_filter = ['article', 'task']
+    list_filter = ['task','article']
 
 
 @admin.register(Contract)

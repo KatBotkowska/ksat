@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Add articles</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h2>Task: <bold>{{ task }}</bold></h2>
+    <h3>Add articles:</h3>
+    {% comment %}<form action="" method="post">
+        {% csrf_token %}
+{{ form.as_p }}
+        <div><input type="submit" value="Add"></div>
+    </form> {% endcomment %}
+    <form action="" method="post">
+
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+        {{ form.as_p }}
+    {% endfor %}
+        <div><input type="submit" value="Add"></div>
+    </form>
+
+
+
+{% endblock %}
