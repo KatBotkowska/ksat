@@ -54,8 +54,9 @@
 
 
     </div>
-    <h3><a href="{% url 'budget:task_add_articles' task.id %}">Add articles</a></h3>
-    <h3><a href="{% url 'budget:edit_task' task.id %}">Edit task</a></h3>
+
+    <h3><a href="{% url 'budget:edit_task' task.id %}">Edit task general info</a></h3>
+    <h3><a href="{% url 'budget:task_edit_articles' task.id %}">Edit articles in task</a></h3>
     <h3><a href="{% url 'budget:delete_task' task.id %}">Delete task</a></h3>
 
 

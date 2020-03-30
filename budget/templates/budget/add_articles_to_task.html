@@ -4,7 +4,7 @@
 {% endblock %}
 {% block content %}
     {{ block.super }}
-    <h2>Task: <bold>{{ task }}</bold></h2>
+    <h2>Task: <bold>{{ task.title }}</bold></h2>
     <h3>Add articles:</h3>
     {% comment %}<form action="" method="post">
         {% csrf_token %}
@@ -21,6 +21,6 @@
         <div><input type="submit" value="Add"></div>
     </form>
 
-
+<a href="{% url 'budget:task_details' task.id %}"><input type="submit" value="Back"></a>
 
 {% endblock %}

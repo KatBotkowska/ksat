@@ -12,6 +12,7 @@ urlpatterns = [
     path('task/<int:task_id>', views.TaskDetailsView.as_view(), name='task_details'),
     path('task_add/', views.AddTaskView.as_view(), name='add_task'),
     path('<int:task_id>/add_articles', views.AddArticlesToTaskView.as_view(), name='task_add_articles'),
+    path('<int:task_id>/edit_articles', views.EditArticlesInTaskView.as_view(), name='task_edit_articles'),
     path('edit_task/<int:task_id>', views.EditTaskView.as_view(), name='edit_task'),
     path('delete_task/<int:task_id>', views.DeleteTaskView.as_view(), name='delete_task'),
     path('contracts/', views.ContractsView.as_view(), name='contracts'),

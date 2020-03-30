@@ -13,6 +13,7 @@ class AddTaskForm(ModelForm):
         widgets = {
             'description': Textarea(attrs={'cols':80, 'rows': 5}),
         }
+        #article = forms.ModelMultipleChoiceField(queryset=Articles.objects.all()) #TODO zobaczyc czy sie tak da
         #help_texts = articles_fields
 class AddArticlesToTaskForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -25,15 +26,21 @@ class AddArticlesToTaskForm(ModelForm):
 
 AddArticlesToTaskFormSet = modelformset_factory(TaskArticles,fields = ('article', 'value'), extra=8)
 
+class EditArticlesInTaskForm(ModelForm):
+    class Meta:
+        model = TaskArticles
+        fields = ('article', 'value')
+        widgets = {
+            'description': Textarea(attrs={'cols': 80, 'rows': 5}),
+         }
+EditArticlesToTaskFormSet = modelformset_factory(TaskArticles,fields = ('article', 'value'), extra=8)
 
-
-
-# class EditTaskForm(ModelForm):
-#     class Meta:
-#         model = Task
-#         fields = ('title', 'description', 'unit', 'section') + tuple(articles_fields.keys())
-#         widgets = {
-#             'description': Textarea(attrs={'cols': 80, 'rows': 5}),
-#         }
+class EditTaskForm(ModelForm):
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'unit', 'section')
+        widgets = {
+            'description': Textarea(attrs={'cols': 80, 'rows': 5}),
+        }
 
 
