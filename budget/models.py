@@ -42,7 +42,10 @@ class Task(models.Model):
         return reverse('budget:task_details', kwargs={'task_id': self.pk})
 
     def task_value(self):
-        return TaskArticles.objects.filter(task=self).aggregate(total = Sum('value'))['total']
+        value = TaskArticles.objects.filter(task=self).aggregate(total = Sum('value'))['total']
+        if value:
+            return value
+        return 0
 
     def engagement(self):
         contracts = Contract.objects.filter(task=self)
@@ -111,22 +114,28 @@ class Contract(models.Model):
     article = models.ManyToManyField(Articles, through='ContractArticle')
 
     def __str__(self):
-        return f'number {self.number}, date {self.date}'
+        return f'N: {self.number}, date {self.date}, contractor {self.contractor}'
 
     def get_absolute_url(self):
         return reverse('budget:contract_details', kwargs={'contract_id': self.pk})
 
+    def contract_value(self):
+        value = ContractArticle.objects.filter(contract=self).aggregate(total = Sum('value'))['total']
+        if value:
+            return value
+        return 0
+
     def contract_performance(self):
-        pass
-        # fds = FinancialDocument.objects.filter(contract=self)
-        # performance = 0
-        # for fd in fds:
-        #     performance += fd.findocumentarticle_set.fin_doc_values()  # TODO POPRAWIC BEDIZE INNE
-        # return performance
+        fin_docs = FinancialDocument.objects.filter(contract=self)
+        performance = 0
+        for fin_doc in fin_docs:
+            #import pdb; pdb.set_trace()
+            performance += fin_doc.fin_doc_value()
+        return performance
 
     class Meta:
         default_related_name = 'contract'
-        ordering = ('number',)
+        ordering = ('number', 'contractor')
         verbose_name = 'contract'
 
 
@@ -135,11 +144,10 @@ class ContractArticle(models.Model):
     contract_article = models.ForeignKey(Articles, on_delete=models.CASCADE)
     value = models.DecimalField(decimal_places=2, max_digits=11, default=0)
 
-    def contract_value(self, contract):
-        return ContractArticle.objects.filter(contract=contract).aggregate(total=Sum('value'),
-                                                                           output_field=models.DecimalField(
-                                                                               decimal_places=2))
-
+    class Meta:
+        default_related_name = 'contract_articles'
+        ordering = ('contract',)
+        verbose_name = 'contract articles'
 
 class FinancialDocument(models.Model):
     # task = models.ForeignKey(Task, on_delete=models.CASCADE)
@@ -154,6 +162,12 @@ class FinancialDocument(models.Model):
 
     def get_absolute_url(self):
         return reverse('budget:doc_details', kwargs={'fd_id': self.pk})
+
+    def fin_doc_value(self):
+        return FinDocumentArticle.objects.filter(fin_doc=self).aggregate(total = Sum('value'))['total']
+
+    def __str__(self):
+        return f'{self.number} from {self.date}'
 
     class Meta:
         default_related_name = 'fds'

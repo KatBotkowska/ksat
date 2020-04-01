@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Add contract</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h3>Add new contract:</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+{{ form.as_p }}
+        <div><input type="submit" value="Add"></div>
+    </form>
+
+{% endblock %}

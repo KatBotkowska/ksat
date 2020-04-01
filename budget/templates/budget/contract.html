@@ -10,17 +10,15 @@
             <li>Date: {{ contract.date }}</li>
             <li>Task: {{ contract.task }}</li>
             <li>Contractor: {{ contract.contractor }}</li>
-            <li>Total value: {{ contract.value }}</li>
+            <li>Total value: {{ contract.contract_value }}</li>
             <li>Performance: {{ contract.contract_performance }}</li>
         </ul>
     </div>
     <div>
-        <b>Financial Plan - Contract:</b>
-        {% for article in contract.articles_val.items %}
+        <b>Financial Plan for Contract:</b>
+        {% for article in contract.contract_articles.all %}
             <ul>
-                {% if article.1 is not None and article.1  > 0.00%}
-                    <li>{{ article.0 }}: {{ article.1 }}</li>
-                {% endif %}
+                <li>{{ article.contract_article.total_number }}: {{ article.value }} PLN</li>
             </ul>
         {% endfor %}
 
@@ -45,8 +43,8 @@
                     <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
                     <td>{{ fd.date }}</td>
                     <td>{{ fd.payment_date1 }}</td>
-                    <td>{{ fd.payment_date2 }} </td>
-                    <td>{{ fd.value }}</td>
+                    <td>{% if fd.payment_date2 %}{{ fd.payment_date2 }} {% else %} No additional payements {% endif %}</td>
+                    <td>{{ fd.fin_doc_value }}</td>
                 </tr>
             {% empty %} No financial documents for contract
             {% endfor %}
@@ -55,6 +53,7 @@
     </div>
 
     <h3><a href="{% url 'budget:edit_contract' contract.id %}">Edit contract</a></h3>
+    <h3><a href="{% url 'budget:contract_edit_articles' contract.id %}">Edit articles in contract</a></h3>
     <h3><a href="{% url 'budget:delete_contract' contract.id %}">Delete contract</a></h3>
 
 
