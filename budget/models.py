@@ -82,7 +82,7 @@ class TaskArticles(models.Model):
 class Contractor(models.Model):
     name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
-    _id = models.SmallIntegerField(blank=True)
+    num = models.SmallIntegerField(blank=True)
 
     def get_absolute_url(self):
         return reverse('budget:contractor_details', kwargs={'contractor_id': self.pk})
@@ -95,9 +95,16 @@ class Contractor(models.Model):
 
     def contracts_value(self):
         contracts_value = 0
-        for contract in self.contracts():
-            contracts_value += ContractArticle.objects.filter(contract=contract).aggregate(total=Sum('value'))['total']
+        for contract in Contract.objects.filter(contractor=self):
+            contracts_value += contract.contract_value()
         return contracts_value
+
+    def contracts_performance(self):
+        contracts_performance = 0
+        for contract in Contract.objects.filter(contractor=self):
+            contracts_performance += contract.contract_performance()
+        return contracts_performance
+
 
     class Meta:
         default_related_name = 'contractors'

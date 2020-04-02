@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Delete contractor</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h3>Confirm delete contractor: {{ contractor}}</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete contractor: {{ contractor }}</p>
+        <div><input type="submit" value="Delete"></div>
+    </form>
+    <a href="{% url 'budget:contractor_details' contractor.id %}"><button type="submit">No, just kidding!</button></a>
+
+{% endblock %}

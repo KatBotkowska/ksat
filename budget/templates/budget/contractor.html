@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Contractor {{ contractor }}</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h2>Contractor: {{ contractor }}</h2>
+    <div><b>General info:</b>
+        <ul>
+            <li>Identity Number: {{ contractor.num }}</li>
+            <li>Name: {{ contractor.name }}</li>
+            <li>Last name: {{ contractor.last_name }}</li>
+            <li>Total value of contracts: {{ contractor.contracts_value }} </li>
+            <li>Total performance of contracts:{{ contractor.contracts_performance }} </li>
+        </ul>
+    </div>
+    <div>
+        <b>Contracts:</b>
+        {% for contract in contractor.contracts.all %}
+            <ul>
+                <li><a href="{% url 'budget:contract_details' contract.id %}">Number: {{ contract.number }},</a>  date: {{ contract.date }}, value: {{ contract.contract_value }} PLN</li>
+            </ul>
+        {% endfor %}
+    </div>
+    <div>
+        <b>Financial documents for contractor:</b>
+        <table border="bold">
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Contract</td>
+                <td>Task</td>
+                <td>Number</td>
+                <td>Date</td>
+                <td>Payment date (first)</td>
+                <td>Payment date (second</td>
+                <td>Value</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for fd in contractor.fds.all %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ fd.contract }}</td>
+                    <td>{{ fd.contract.task.title }}</td>
+                    <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
+                    <td>{{ fd.date }}</td>
+                    <td>{{ fd.payment_date1 }}</td>
+                    <td>{% if fd.payment_date2 %}{{ fd.payment_date2 }} {% else %} No additional payements {% endif %}</td>
+                    <td>{{ fd.fin_doc_value }}</td>
+                </tr>
+            {% empty %} No financial documents for contractor
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h3><a href="{% url 'budget:edit_contractor' contractor.id %}">Edit contractor</a></h3>
+    <h3><a href="{% url 'budget:delete_contractor' contractor.id %}">Delete contractor</a></h3>
+
+
+{% endblock %}

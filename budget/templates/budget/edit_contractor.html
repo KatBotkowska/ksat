@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Edit contractor</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h3>Edit contractor: {{ contractor }}</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+{{ form.as_p }}
+        <div><input type="submit" value="Save"></div>
+    </form>
+
+{% endblock %}

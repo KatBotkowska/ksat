@@ -5,7 +5,7 @@ from .models import Articles, Task, Contract, Contractor, FinancialDocument, Tas
     FinDocumentArticle
 
 
-#Forms for Task
+# Forms for Task
 class AddTaskForm(ModelForm):
     class Meta:
         model = Task
@@ -49,14 +49,14 @@ class EditTaskForm(ModelForm):
         }
 
 
-#Forms for Contract
+# Forms for Contract
 class AddContractForm(ModelForm):
     class Meta:
         model = Contract
         fields = ('number', 'date', 'task', 'contractor')
 
-
         # article = forms.ModelMultipleChoiceField(queryset=Articles.objects.all()) #TODO zobaczyc czy sie tak da
+
 
 class AddArticlesToContractForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -67,6 +67,7 @@ class AddArticlesToContractForm(ModelForm):
     class Meta:
         model = ContractArticle
         fields = ('contract_article', 'value')
+
 
 AddArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=6)
 

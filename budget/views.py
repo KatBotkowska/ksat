@@ -247,23 +247,41 @@ class DeleteContractView(DeleteView):
 # VIEWS FOR CONTRACTOR
 
 class ContractorView(ListView):
-    pass
+    model = Contractor
+    template_name = 'budget/contractors.html'
+    context_object_name = 'contractors'
 
 
 class ContractorDetailsView(DetailView):
-    pass
+    model = Contractor
+    template_name = 'budget/contractor.html'
+    context_object_name = 'contractor'
+    pk_url_kwarg = 'contractor_id'
 
 
 class AddContractorView(CreateView):
-    pass
+    model = Contractor
+    fields = '__all__'
+    template_name = 'budget/add_contractor.html'
+    success_url = reverse_lazy('budget:contractors')
 
 
 class EditContractorView(UpdateView):
-    pass
+    model = Contractor
+    fields = '__all__'
+    pk_url_kwarg = 'contractor_id'
+    template_name = 'budget/edit_contractor.html'
+    #success_url = reverse_lazy('budget:contractor_details')
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
 
 
 class DeleteContractorView(DeleteView):
-    pass
+    model = Contractor
+    template_name = 'budget/delete_contractor.html'
+    pk_url_kwarg = 'contractor_id'
+    success_url = reverse_lazy('budget:contractors')
 
 
 # VIEWS FOR FINANCIAL DOCUMENTS
