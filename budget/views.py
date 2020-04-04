@@ -174,7 +174,11 @@ class AddArticlesToContractView(CreateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         # ctx['task_id'] = self.kwargs.get('task_id')
-        ctx['formset'] = AddArticlesToContractFormSet(queryset=Contract.objects.none())
+        #ctx['formset'] = AddArticlesToContractFormSet(queryset=Contract.objects.none())
+        task = Contract.objects.get(id=self.kwargs.get('contract_id')).task
+        ctx['formset'] = AddArticlesToContractFormSet(queryset=task.article.all())
+        print(task.article.all())
+        print(ctx['formset'][0])
         ctx['contract'] = Contract.objects.get(pk=self.kwargs.get('contract_id'))
         return ctx
 

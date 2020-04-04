@@ -62,7 +62,9 @@ class AddArticlesToContractForm(ModelForm):
     def __init__(self, *args, **kwargs):
         contract_id = kwargs.pop('initial')['contract_id']
         super().__init__(*args, **kwargs)
-        # self.fields['contract'].queryset = Contract.objects.filter(id=contract_id) #musi być filter, a nie get
+        task = Contract.objects.get(id=contract_id).task
+        #print(task.article.all())
+        self.fields['contract_article'].queryset = task.article.all() #musi być filter, a nie get
 
     class Meta:
         model = ContractArticle

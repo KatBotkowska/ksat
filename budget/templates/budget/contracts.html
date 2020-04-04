@@ -23,8 +23,8 @@
                     <td>{{ forloop.counter }}</td>
                     <td><a href="{{ contract.get_absolute_url }}">{{ contract.number }}</a></td>
                     <td>{{ contract.date }}</td>
-                    <td>{{ contract.task }}</td>
-                    <td>{{ contract.contractor }} </td>
+                    <td><a href="{% url 'budget:task_details' contract.task.id%}">{{ contract.task.title }}</a></td>
+                    <td><a href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a></td>
                     <td>{{ contract.contract_value }}</td>
                     <td>{{ contract.contract_performance }}</td>
                 </tr>

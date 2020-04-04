@@ -8,8 +8,8 @@
     <div><b>General info:</b>
         <ul>
             <li>Date: {{ contract.date }}</li>
-            <li>Task: {{ contract.task }}</li>
-            <li>Contractor: {{ contract.contractor }}</li>
+            <li>Task: <a href="{% url 'budget:task_details' contract.task.id %}">{{ contract.task.title }}</a> </li>
+            <li>Contractor: <a href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a> </li>
             <li>Total value: {{ contract.contract_value }}</li>
             <li>Performance: {{ contract.contract_performance }}</li>
         </ul>
