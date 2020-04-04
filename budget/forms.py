@@ -71,7 +71,8 @@ class AddArticlesToContractForm(ModelForm):
         fields = ('contract_article', 'value')
 
 
-AddArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=6)
+AddArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), min_num=1, validate_min=True, extra=0)
+#class AddArticlesToContractFormSet(BaseFormSet):
 
 
 class EditArticlesInContractForm(ModelForm):

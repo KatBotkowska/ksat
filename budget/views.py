@@ -169,16 +169,16 @@ class AddArticlesToContractView(CreateView):
     form_class = AddArticlesToContractForm
     template_name = 'budget/add_articles_to_contract.html'
     pk_url_kwarg = 'contract_id'
-    success_url = reverse_lazy('budget:contract_details')
+    #success_url = reverse_lazy('budget:contract_details')
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        # ctx['task_id'] = self.kwargs.get('task_id')
         #ctx['formset'] = AddArticlesToContractFormSet(queryset=Contract.objects.none())
         task = Contract.objects.get(id=self.kwargs.get('contract_id')).task
-        ctx['formset'] = AddArticlesToContractFormSet(queryset=task.article.all())
-        print(task.article.all())
-        print(ctx['formset'][0])
+        formset = AddArticlesToContractFormSet(queryset=task.article.all())
+        for form in formset:
+            form.fields['contract_article'].queryset = task.article.all()
+        ctx['formset'] = formset
         ctx['contract'] = Contract.objects.get(pk=self.kwargs.get('contract_id'))
         return ctx
 
@@ -190,16 +190,20 @@ class AddArticlesToContractView(CreateView):
         formset = AddArticlesToContractFormSet(request.POST)
         if formset.is_valid():
             return self.form_valid(formset)
+        else:
+            print('nieee')
 
     def form_valid(self, formset):
         instances = formset.save(commit=False)
         for instance in instances:
             instance.contract = Contract.objects.get(id=self.initial.get('contract_id'))
             instance.save()
-        self.success_url = reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
+        #self.success_url = reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
         # import pdb;
         # pdb.set_trace()
-        return HttpResponseRedirect(self.success_url)
+        return HttpResponseRedirect(reverse_lazy('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')}))
+        # import pdb;))
+        #return HttpResponseRedirect(self.success_url)
 
 
 class EditArticlesInContractView(UpdateView):
