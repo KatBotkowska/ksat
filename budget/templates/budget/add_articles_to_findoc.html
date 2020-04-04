@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Add articles</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h2>Financial document: <bold>{{ findoc}}</bold></h2>
+    <h3>Add articles:</h3>
+    <form action="" method="post">
+
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+        {{ form.as_p }}
+    {% endfor %}
+        <div><input type="submit" value="Add"></div>
+    </form>
+
+<a href="{% url 'budget:findoc_details' findoc.id %}"><input type="submit" value="Back"></a>
+
+{% endblock %}

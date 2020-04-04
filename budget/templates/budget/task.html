@@ -24,6 +24,7 @@
         {% endfor %}
 
     </div>
+    {% if task.engagement %}
     <div>
         <b>Contracts:</b>
         <table border="bold">
@@ -51,10 +52,21 @@
             {% endfor %}
             </tbody>
         </table>
-
-
     </div>
-
+    {% else %}
+        <div>
+        No contracts for task. You can add a new one in menu <a href="{% url 'budget:contracts' %}">contracts.</a>
+        </div>
+    {% endif %}
+    {% if task.performance %}
+        <div>
+        <h3><a href="{% url 'budget:task-findocs' task.id %}">Financial documents for task - details</a></h3>
+        </div>
+    {% else %}
+        <div>
+        No financial document for task. You can add a new one in contract details.
+        </div>
+    {% endif %}
     <h3><a href="{% url 'budget:edit_task' task.id %}">Edit task general info</a></h3>
     <h3><a href="{% url 'budget:task_edit_articles' task.id %}">Edit articles in task</a></h3>
     <h3><a href="{% url 'budget:delete_task' task.id %}">Delete task</a></h3>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block header %}
+    <title>Financial Document for Contract: {{ contract.number }}s</title>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+    <h2>Contract: {{ contract.number }}</h2>
+    <h2>Contractor: {{ contract.contractor }}</h2>
+    <h2>Task: {{ contract.task.title }}</h2>
+    <h3>Contract value: {{ contract.contract_value }}</h3>
+    <h3>Contract peformance: {{ contract.contract_performance }}</h3>
+    {%  if not contract.contract_performance %}
+    No financial document for this contract yet.
+    {% else %}
+        <table border="bold">
+            <thead>
+            <tr>
+                <td>Id</td>
+                <td>Number</td>
+                <td>Date</td>
+                <td>Value</td>
+                <td>Payement Date -1</td>
+                <td>Payement Date -2</td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for findoc in findocs %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td><a href="{{ findoc.get_absolute_url }}">{{ findoc.number }}</a></td>
+                    <td>{{ findoc.date }}</td>
+                    <td>{{ findoc.fin_doc_value }}</td>
+                    <td>{{ findoc.payment_date1 }}</td>
+                    <td>{% if findoc.payment_date2 %}{{ findoc.payment_date2 }}{% else %} No additional payements {% endif %}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <h3><a href="{% url 'budget:add_findoc' %}">Add new financial document for contract {{ contract.number }}</a></h3>
+
+
+{% endblock %}

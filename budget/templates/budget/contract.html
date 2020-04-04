@@ -23,6 +23,9 @@
         {% endfor %}
 
     </div>
+    {% if not contract.contract_performance %}
+    <div>No financial document for contract</div>
+    {% else %}
     <div>
         <b>Financial documents for contract:</b>
         <table border="bold">
@@ -46,11 +49,12 @@
                     <td>{% if fd.payment_date2 %}{{ fd.payment_date2 }} {% else %} No additional payements {% endif %}</td>
                     <td>{{ fd.fin_doc_value }}</td>
                 </tr>
-            {% empty %} No financial documents for contract
             {% endfor %}
             </tbody>
         </table>
+        <h3><a href="{% url 'budget:contract-findocs' contract.id %}">Financial documents for contract - details</a></h3>
     </div>
+    {% endif %}
 
     <h3><a href="{% url 'budget:edit_contract' contract.id %}">Edit contract</a></h3>
     <h3><a href="{% url 'budget:contract_edit_articles' contract.id %}">Edit articles in contract</a></h3>

@@ -31,9 +31,13 @@ urlpatterns = [
     path('edit_contractor/<int:contractor_id>', views.EditContractorView.as_view(), name='edit_contractor'),
     path('delete_contractor/<int:contractor_id>', views.DeleteContractorView.as_view(), name='delete_contractor'),
     #FINANCIAL DOCUMENTS
-    path('documents/', views.FinancialDocView.as_view(), name='docs'), #TODO <'<int:contract_id>/documents/'
-    path('document/<int:fd_id>', views.FinancialDocDetailsView.as_view(), name='doc_details'),#TODO <'<int:contract_id>/<int:fd_id>'/'
-    path('add_document/', views.AddFinancialDocView.as_view(), name='add_doc'), #the same
-    path('edit_document/<int:fd_id>', views.EditFinancialDocView.as_view(), name='edit_doc'),
-    path('delete_document/<int:fd_id>', views.DeleteFinancialDocView.as_view(), name='delete_doc'),
+    path('documents/conractor/<int:contractor_id>/docs', views.FinancialDocContractorView.as_view(), name ='contractor-findocs'),
+    path('documents/conract/<int:contract_id>/docs', views.FinancialDocContractView.as_view(), name ='contract-findocs'),
+    path('documents/task/<int:task_id>/docs', views.FinancialDocTaskView.as_view(), name ='task-findocs'),
+    path('document/<int:findoc_id>', views.FinancialDocDetailsView.as_view(), name='findoc_details'),#TODO <'<int:contract_id>/<int:fd_id>'/'
+    path('add_findoc', views.AddFinancialDocView.as_view(), name='add_findoc'), #the same
+    path('<int:findoc_id>/add_articles_to_findoc', views.AddArticlesToFinDocView.as_view(), name='findoc_add_articles'),
+    path('edit_document/<int:findoc_id>', views.EditFinancialDocView.as_view(), name='edit_doc'),
+    path('<int:findoc_id>/edit_articles_in_findoc', views.EditArticlesInFinDocView.as_view(), name='findoc_edit_articles'),
+    path('delete_document/<int:findoc_id>', views.DeleteFinancialDocView.as_view(), name='delete_doc'),
 ]

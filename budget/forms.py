@@ -85,3 +85,39 @@ class EditContractForm(ModelForm):
     class Meta:
         model = Contract
         fields = ('number', 'date', 'task', 'contractor')
+
+
+# Forms for financial documents
+class AddFinancialDocForm(ModelForm):
+    class Meta:
+        model = FinancialDocument
+        fields = ('contract', 'contractor', 'number', 'date', 'payment_date1', 'payment_date2')
+
+
+class AddArticlesToFinDocForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        findoc_id = kwargs.pop('initial')['findoc_id']
+        super().__init__(*args, **kwargs)
+        # self.fields['contract'].queryset = Contract.objects.filter(id=contract_id) #musi być filter, a nie get
+
+    class Meta:
+        model = FinDocumentArticle
+        fields = ('article', 'value')
+
+
+AddArticlesToFinDocFormSet = modelformset_factory(FinDocumentArticle, fields=('article', 'value'), extra=6)
+
+
+class EditFinDocForm(ModelForm):
+    class Meta:
+        model = FinancialDocument
+        fields = ('contract', 'contractor', 'number', 'date', 'payment_date1', 'payment_date2')
+
+
+class EditArticlesInFinDocForm(ModelForm):
+    class Meta:
+        model = FinDocumentArticle
+        fields = ('article', 'value')
+
+
+EditArticlesToFinDocFormSet = modelformset_factory(FinDocumentArticle, fields=('article', 'value'), extra=6)

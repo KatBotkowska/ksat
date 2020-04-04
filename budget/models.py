@@ -51,18 +51,18 @@ class Task(models.Model):
         contracts = Contract.objects.filter(task=self)
         engagement = 0
         for contract in contracts:
-            engagement += contract.contractarticle_set.aggregate(total = Sum('value'))['total']
+            engagement += contract.contract_value()
         return engagement
 
     def performance(self):
-        pass
-        # fds = FinancialDocument.objects.filter(contract__task=self)
-        # performance = 0
-        # for fd in fds:
-        #     performance += fd.findocumentarticle_set.aggregate(total = Sum('value'))['total']  # TODO POPRAWIC BEDZIE INNE
-        # return performance
+        contracts = Contract.objects.filter(task=self)
+        performance = 0
+        for contract in contracts:
+            performance += contract.contract_performance()
+        return performance
 
-    class Meta:
+
+class Meta:
         default_related_name = 'task'
         ordering = ('title',)
         verbose_name = 'task'
@@ -168,10 +168,13 @@ class FinancialDocument(models.Model):
     article = models.ManyToManyField(Articles, through='FinDocumentArticle')
 
     def get_absolute_url(self):
-        return reverse('budget:doc_details', kwargs={'fd_id': self.pk})
+        return reverse('budget:findoc_details', kwargs={'findoc_id': self.pk})
 
     def fin_doc_value(self):
-        return FinDocumentArticle.objects.filter(fin_doc=self).aggregate(total = Sum('value'))['total']
+        value = FinDocumentArticle.objects.filter(fin_doc=self).aggregate(total = Sum('value'))['total']
+        if value:
+            return value
+        return 0
 
     def __str__(self):
         return f'{self.number} from {self.date}'

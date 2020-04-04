@@ -32,29 +32,29 @@
                 <td>Task</td>
                 <td>Number</td>
                 <td>Date</td>
+                <td>Value</td>
                 <td>Payment date (first)</td>
                 <td>Payment date (second</td>
-                <td>Value</td>
-            </tr>
+                </tr>
             </thead>
             <tbody>
             {% for fd in contractor.fds.all %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ fd.contract }}</td>
+                    <td>{{ fd.contract.number }}</td>
                     <td>{{ fd.contract.task.title }}</td>
                     <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
                     <td>{{ fd.date }}</td>
+                    <td>{{ fd.fin_doc_value }}</td>
                     <td>{{ fd.payment_date1 }}</td>
                     <td>{% if fd.payment_date2 %}{{ fd.payment_date2 }} {% else %} No additional payements {% endif %}</td>
-                    <td>{{ fd.fin_doc_value }}</td>
                 </tr>
             {% empty %} No financial documents for contractor
             {% endfor %}
             </tbody>
         </table>
     </div>
-
+    <h3><a href="{% url 'budget:contractor-findocs' contractor.id %}">Financial documents for contractor - details</a></h3>
     <h3><a href="{% url 'budget:edit_contractor' contractor.id %}">Edit contractor</a></h3>
     <h3><a href="{% url 'budget:delete_contractor' contractor.id %}">Delete contractor</a></h3>
 
