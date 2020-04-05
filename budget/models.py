@@ -42,7 +42,7 @@ class Task(models.Model):
         return reverse('budget:task_details', kwargs={'task_id': self.pk})
 
     def task_value(self):
-        value = TaskArticles.objects.filter(task=self).aggregate(total = Sum('value'))['total']
+        value = TaskArticles.objects.filter(task=self).aggregate(total=Sum('value'))['total']
         if value:
             return value
         return 0
@@ -63,9 +63,9 @@ class Task(models.Model):
 
 
 class Meta:
-        default_related_name = 'task'
-        ordering = ('title',)
-        verbose_name = 'task'
+    default_related_name = 'task'
+    ordering = ('title',)
+    verbose_name = 'task'
 
 
 class TaskArticles(models.Model):
@@ -105,7 +105,6 @@ class Contractor(models.Model):
             contracts_performance += contract.contract_performance()
         return contracts_performance
 
-
     class Meta:
         default_related_name = 'contractors'
         ordering = ('last_name',)
@@ -127,7 +126,7 @@ class Contract(models.Model):
         return reverse('budget:contract_details', kwargs={'contract_id': self.pk})
 
     def contract_value(self):
-        value = ContractArticle.objects.filter(contract=self).aggregate(total = Sum('value'))['total']
+        value = ContractArticle.objects.filter(contract=self).aggregate(total=Sum('value'))['total']
         if value:
             return value
         return 0
@@ -136,7 +135,7 @@ class Contract(models.Model):
         fin_docs = FinancialDocument.objects.filter(contract=self)
         performance = 0
         for fin_doc in fin_docs:
-            #import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             performance += fin_doc.fin_doc_value()
         return performance
 
@@ -148,13 +147,19 @@ class Contract(models.Model):
 
 class ContractArticle(models.Model):
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
-    contract_article = models.ForeignKey(Articles, on_delete=models.CASCADE)
+    contract_article = models.ForeignKey(Articles, on_delete=models.CASCADE, blank=True )
     value = models.DecimalField(decimal_places=2, max_digits=11, default=0)
 
     class Meta:
         default_related_name = 'contract_articles'
         ordering = ('contract',)
         verbose_name = 'contract articles'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.contract_article_id is not None:
+            super().save(force_insert, force_update, using, update_fields)
+
 
 class FinancialDocument(models.Model):
     # task = models.ForeignKey(Task, on_delete=models.CASCADE)
@@ -171,7 +176,7 @@ class FinancialDocument(models.Model):
         return reverse('budget:findoc_details', kwargs={'findoc_id': self.pk})
 
     def fin_doc_value(self):
-        value = FinDocumentArticle.objects.filter(fin_doc=self).aggregate(total = Sum('value'))['total']
+        value = FinDocumentArticle.objects.filter(fin_doc=self).aggregate(total=Sum('value'))['total']
         if value:
             return value
         return 0
@@ -184,12 +189,11 @@ class FinancialDocument(models.Model):
         verbose_name = 'finacial_doc'
 
 
-
 class FinDocumentArticle(models.Model):
     article = models.ForeignKey(Articles, on_delete=models.CASCADE)
     fin_doc = models.ForeignKey(FinancialDocument, on_delete=models.CASCADE)
     value = models.DecimalField(decimal_places=2, max_digits=11, default=0)
 
     def fin_doc_value(self, fin_doc):
-        return self.objects.filter(fin_doc=fin_doc).aggregate(total = Sum('value'), output_field=models.DecimalField(
-                                                                               decimal_places=2))
+        return self.objects.filter(fin_doc=fin_doc).aggregate(total=Sum('value'), output_field=models.DecimalField(
+            decimal_places=2))

@@ -9,13 +9,15 @@
     <form action="" method="post">
 
         {% csrf_token %}
-        {{ formset.management_form }}
-        {% for form in formset %}
-        {{ form.as_p }}
+        {{ form.management_form }}
+        {% for single_form in form %}
+        {{ single_form.as_p }}
     {% endfor %}
         <div><input type="submit" value="Add"></div>
     </form>
 
-<a href="{% url 'budget:contract_details' contract.id %}"><input type="submit" value="Back"></a>
+
+
+{#<a href="{% url 'budget:contract_details' contract.id %}"><input type="submit" value="Back"></a>#}
 
 {% endblock %}

@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, Textarea, formset_factory
+from django.forms import ModelForm, Textarea, formset_factory, BaseFormSet
 from django.forms.models import modelformset_factory
 from .models import Articles, Task, Contract, Contractor, FinancialDocument, TaskArticles, ContractArticle, \
     FinDocumentArticle
@@ -37,7 +37,7 @@ class EditArticlesInTaskForm(ModelForm):
         fields = ('article', 'value')
 
 
-EditArticlesToTaskFormSet = modelformset_factory(TaskArticles, fields=('article', 'value'), extra=8)
+EditArticlesToTaskFormSet = modelformset_factory(TaskArticles, fields=('article', 'value'), extra=4)
 
 
 class EditTaskForm(ModelForm):
@@ -58,21 +58,41 @@ class AddContractForm(ModelForm):
         # article = forms.ModelMultipleChoiceField(queryset=Articles.objects.all()) #TODO zobaczyc czy sie tak da
 
 
+
 class AddArticlesToContractForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         contract = self.initial.get('contract')
         if contract is not None:
             self.fields['contract_article'].queryset = contract.task.article.all()
-        self.fields['contract'].queryset = Contract.objects.filter(id=contract.id)
-        self.fields['contract'].empty_label = None
+            self.fields['contract'].queryset = Contract.objects.filter(id=contract.id)
+            self.fields['contract'].empty_label = None
+
+    def clean(self):
+        cleaned_data = super().clean()
+        task = cleaned_data.get('contract').task
+        article = cleaned_data.get('contract_article')
+        if article is not None:
+            if self.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
+                raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
+        return self.cleaned_data
 
     class Meta:
         model = ContractArticle
         fields = ('contract_article', 'value', 'contract')
 
+# class BaseAddArticlesToContractFormSet(BaseFormSet):
+#     def clean(self):
+#         super().clean()
+#         for form in self.forms:
+#             task = form.cleaned_data.get('contract').task
+#             article = form.cleaned_data.get('contract_article')
+#             if article is not None:
+#                 if form.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
+#                     raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
 
-AddArticlesToContractFormSet = formset_factory(AddArticlesToContractForm, extra=0)
+
+
 
 
 class EditArticlesInContractForm(ModelForm):
@@ -81,7 +101,7 @@ class EditArticlesInContractForm(ModelForm):
         fields = ('contract_article', 'value')
 
 
-EditArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=6)
+EditArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=0)
 
 
 class EditContractForm(ModelForm):
