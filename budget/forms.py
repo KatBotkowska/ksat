@@ -69,31 +69,30 @@ class AddArticlesToContractForm(ModelForm):
             self.fields['contract'].empty_label = None
 
     def clean(self):
-        super().clean()
-        task = self.cleaned_data.get('contract').task
-
-        article = self.cleaned_data.get('contract_article')
+        cleaned_data = super().clean()
+        task = cleaned_data.get('contract').task
+        article = cleaned_data.get('contract_article')
         if article is not None:
             if self.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
                 raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
+        return self.cleaned_data
 
     class Meta:
         model = ContractArticle
         fields = ('contract_article', 'value', 'contract')
 
-class BaseAddArticlesToContractFormSet(BaseFormSet):
-    def clean(self):
-        super().clean()
-        for form in self.forms:
-            # if not form.is_valid():
-            #     continue
-            task = form.cleaned_data.get('contract').task
-            article = form.cleaned_data.get('contract_article')
-            if form.cleaned_data.get('value') > TaskArticles.objects.filter(task=task, article=article).value:
-                raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
+# class BaseAddArticlesToContractFormSet(BaseFormSet):
+#     def clean(self):
+#         super().clean()
+#         for form in self.forms:
+#             task = form.cleaned_data.get('contract').task
+#             article = form.cleaned_data.get('contract_article')
+#             if article is not None:
+#                 if form.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
+#                     raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
 
 
-AddArticlesToContractFormSet = formset_factory(AddArticlesToContractForm, formset=BaseAddArticlesToContractFormSet, extra=0)
+
 
 
 class EditArticlesInContractForm(ModelForm):

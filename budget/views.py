@@ -1,3 +1,4 @@
+from django.forms import formset_factory
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
@@ -5,7 +6,7 @@ from django.views.generic import ListView, CreateView, DetailView, DeleteView, U
 from django.views.generic.base import View, TemplateView
 
 from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet, EditArticlesInTaskForm, \
-    EditArticlesToTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, AddArticlesToContractFormSet, \
+    EditArticlesToTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
     EditContractForm, EditArticlesInContractForm, EditArticlesToContractFormSet, AddFinancialDocForm, \
     AddArticlesToFinDocForm, AddArticlesToFinDocFormSet, EditFinDocForm, EditArticlesInFinDocForm, \
     EditArticlesToFinDocFormSet
@@ -164,54 +165,37 @@ class AddContractView(FormView):
         return HttpResponseRedirect(self.success_url)
 
 
-class AddArticlesToContractView(CreateView):
-    model = ContractArticle
-    form_class = AddArticlesToContractFormSet
+class AddArticlesToContractView(FormView):
+
     template_name = 'budget/add_articles_to_contract.html'
     pk_url_kwarg = 'contract_id'
-    success_url = reverse_lazy('budget:contract_details')
+    success_url = ""
 
-    def get_form(self, form_class=None):
-        return self.form_class(form_kwargs={'contract_id':self.request.GET.get('contract_id')})
+    def get_contract(self):
+        id = self.kwargs.get('contract_id')
+        return Contract.objects.get(id=id)
 
-    # def get_success_url(self):
-    #     return reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
+    def get_form_class(self):
+        contract = self.get_contract()
+        amount = contract.task.article.all().count()
+        return formset_factory(AddArticlesToContractForm, extra=0)
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        # ctx['task_id'] = self.kwargs.get('task_id')
-        contract = Contract.objects.get(pk=self.kwargs.get('contract_id'))
-        ilosc_art = contract.task.article.all().count()
-        ctx['formset'] = AddArticlesToContractFormSet(initial=ilosc_art * [{'contract': contract}])
-        ctx['contract'] = Contract.objects.get(pk=self.kwargs.get('contract_id'))
-        return ctx
+    def get_success_url(self):
+        return reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
 
-    #
+    def form_valid(self, form):
+        for item in form:
+            ca = item.save(commit=False)
+            ca.save()
+        return super().form_valid(form)
+
+
+
     def get_initial(self):
-        self.initial.update({'contract_id': self.kwargs['contract_id']})
-        return super().get_initial()
+        contract = self.get_contract()
+        amount = contract.task.article.all().count()
+        return amount*[{'contract': contract}]
 
-    # #
-    def post(self, request, *args, **kwargs):
-        contract = Contract.objects.get(pk=self.kwargs.get('contract_id'))
-        ilosc_art = contract.task.article.all().count()
-        formset = AddArticlesToContractFormSet(request.POST)
-        id = kwargs['contract_id']
-        contract = Contract.objects.get(pk=id)
-        for form in formset:
-            if form.is_valid():
-                item = form.save(commit=False)
-                if item.contract_article_id is None:
-                    continue
-                item.contract = contract
-                item.save()
-
-        return self.form_valid(form)
-
-    #
-    def form_valid(self, formset):
-        self.success_url = reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
-        return HttpResponseRedirect(self.success_url)
 
 
 class EditArticlesInContractView(UpdateView):
@@ -219,19 +203,19 @@ class EditArticlesInContractView(UpdateView):
     form_class = EditArticlesInContractForm
     template_name = 'budget/contract_edit_articles.html'
     pk_url_kwarg = 'contract_id'
-    success_url = reverse_lazy('budget:contract_details')
+    # success_url = reverse_lazy('budget:contract_details')
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         # ctx['task_id'] = self.kwargs.get('task_id')
-        ctx['contract'] = Contract.objects.get(pk=self.kwargs.get('contract_id'))
-        ctx['formset'] = EditArticlesToContractFormSet(
-            queryset=ContractArticle.objects.filter(contract=ctx['contract']))
+        contract = Contract.objects.get(pk=self.kwargs.get('contract_id'))
+        ctx['contract'] = contract
+        ctx['formset'] = EditArticlesToContractFormSet(initial={'contract': contract})
         return ctx
 
-    def get_initial(self):
-        self.initial.update({'contract_id': self.kwargs['contract_id']})
-        return super().get_initial()
+    # def get_initial(self):
+    #     self.initial.update({'contract_id': self.kwargs['contract_id']})
+    #     return super().get_initial()
 
     def post(self, request, *args, **kwargs):
         formset = EditArticlesToContractFormSet(request.POST)
@@ -439,8 +423,9 @@ class EditArticlesInFinDocView(FormView):
 
     def post(self, request, *args, **kwargs):
         formset = EditArticlesToFinDocFormSet(request.POST)
-        if formset.is_valid():
-            return self.form_valid(formset)
+        for form in formset:
+            if form.is_valid():
+                form.save()
 
     def form_valid(self, formset):
         instances = formset.save(commit=False)
@@ -457,10 +442,6 @@ class DeleteFinancialDocView(DeleteView):
     template_name = 'budget/delete_findoc.html'
     pk_url_kwarg = 'findoc_id'
 
-
     def get_success_url(self):
         findoc = FinancialDocument.objects.get(pk=self.kwargs.get('findoc_id'))
         return reverse('budget:contract-findocs', kwargs={'contract_id': findoc.contract.id})
-
-
-

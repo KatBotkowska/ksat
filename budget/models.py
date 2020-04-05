@@ -147,13 +147,18 @@ class Contract(models.Model):
 
 class ContractArticle(models.Model):
     contract = models.ForeignKey(Contract, on_delete=models.CASCADE)
-    contract_article = models.ForeignKey(Articles, on_delete=models.CASCADE)
+    contract_article = models.ForeignKey(Articles, on_delete=models.CASCADE, blank=True )
     value = models.DecimalField(decimal_places=2, max_digits=11, default=0)
 
     class Meta:
         default_related_name = 'contract_articles'
         ordering = ('contract',)
         verbose_name = 'contract articles'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.contract_article_id is not None:
+            super().save(force_insert, force_update, using, update_fields)
 
 
 class FinancialDocument(models.Model):
