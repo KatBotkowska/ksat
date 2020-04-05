@@ -60,16 +60,19 @@ class AddContractForm(ModelForm):
 
 class AddArticlesToContractForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        contract_id = kwargs.pop('initial')['contract_id']
         super().__init__(*args, **kwargs)
-        # self.fields['contract'].queryset = Contract.objects.filter(id=contract_id) #musi być filter, a nie get
+        contract = self.initial.get('contract')
+        if contract is not None:
+            self.fields['contract_article'].queryset = contract.task.article.all()
+        self.fields['contract'].queryset = Contract.objects.filter(id=contract.id)
+        self.fields['contract'].empty_label = None
 
     class Meta:
         model = ContractArticle
-        fields = ('contract_article', 'value')
+        fields = ('contract_article', 'value', 'contract')
 
 
-AddArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=6)
+AddArticlesToContractFormSet = formset_factory(AddArticlesToContractForm, extra=0)
 
 
 class EditArticlesInContractForm(ModelForm):
