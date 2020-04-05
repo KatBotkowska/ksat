@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, Textarea, formset_factory
+from django.forms import ModelForm, Textarea, formset_factory, BaseFormSet
 from django.forms.models import modelformset_factory
 from .models import Articles, Task, Contract, Contractor, FinancialDocument, TaskArticles, ContractArticle, \
     FinDocumentArticle
@@ -72,8 +72,19 @@ class AddArticlesToContractForm(ModelForm):
         model = ContractArticle
         fields = ('contract_article', 'value', 'contract')
 
+class BaseAddArticlesToContractFormSet(BaseFormSet):
+    def clean(self):
+        super().clean()
+        for form in self.forms:
+            # if not form.is_valid():
+            #     continue
+            task = form.cleaned_data.get('contract').task
+            article = form.cleaned_data.get('contract_article')
+            if form.cleaned_data.get('value') > TaskArticles.objects.filter(task=task, article=article).value:
+                raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
 
-AddArticlesToContractFormSet = formset_factory(AddArticlesToContractForm, extra=0)
+
+AddArticlesToContractFormSet = formset_factory(AddArticlesToContractForm, formset=BaseAddArticlesToContractFormSet, extra=0)
 
 
 class EditArticlesInContractForm(ModelForm):
