@@ -73,10 +73,9 @@ class AddArticlesToContractForm(ModelForm):
         task = self.cleaned_data.get('contract').task
 
         article = self.cleaned_data.get('contract_article')
-        if article is None:
-            return
-        if self.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
-            raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
+        if article is not None:
+            if self.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
+                raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
 
     class Meta:
         model = ContractArticle
