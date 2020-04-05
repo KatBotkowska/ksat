@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Sum
 from django.forms import ModelForm, Textarea, formset_factory, BaseFormSet
 from django.forms.models import modelformset_factory
 from .models import Articles, Task, Contract, Contractor, FinancialDocument, TaskArticles, ContractArticle, \
@@ -73,8 +74,15 @@ class AddArticlesToContractForm(ModelForm):
         task = cleaned_data.get('contract').task
         article = cleaned_data.get('contract_article')
         if article is not None:
-            if self.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
-                raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
+            #wartosc umowy na paragr>plan na paragrafie - zaangażowanie na paragr
+            article_engagement = ContractArticle.objects.filter(contract_article=article, contract__in=Contract.objects.filter(task=task)).aggregate(total=Sum('value'))['total']
+            if article_engagement == None:
+                article_engagement = 0
+            article_engagement = article_engagement
+            amount_to_engage = TaskArticles.objects.get(task=task, article=article).value - article_engagement
+            print(article_engagement)
+            if self.cleaned_data.get('value') > amount_to_engage:
+                raise forms.ValidationError(f'wartosc umowy na paragrafie wieksza niz wartosc wolnych srodkow  zadania na paragrafie, na paragrafie zostało {amount_to_engage} wolne')
         return self.cleaned_data
 
     class Meta:
