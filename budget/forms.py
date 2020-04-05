@@ -37,7 +37,7 @@ class EditArticlesInTaskForm(ModelForm):
         fields = ('article', 'value')
 
 
-EditArticlesToTaskFormSet = modelformset_factory(TaskArticles, fields=('article', 'value'), extra=8)
+EditArticlesToTaskFormSet = modelformset_factory(TaskArticles, fields=('article', 'value'), extra=4)
 
 
 class EditTaskForm(ModelForm):
@@ -58,21 +58,22 @@ class AddContractForm(ModelForm):
         # article = forms.ModelMultipleChoiceField(queryset=Articles.objects.all()) #TODO zobaczyc czy sie tak da
 
 
+
 class AddArticlesToContractForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        contract_id = kwargs.pop('initial')['contract_id']
         super().__init__(*args, **kwargs)
-        task = Contract.objects.get(id=contract_id).task
-        #print(task.article.all())
-        self.fields['contract_article'].queryset = task.article.all() #musi być filter, a nie get
+        contract = self.initial.get('contract')
+        if contract is not None:
+            self.fields['contract_article'].queryset = contract.task.article.all()
+            self.fields['contract'].queryset = Contract.objects.filter(id=contract.id)
+            self.fields['contract'].empty_label = None
 
     class Meta:
         model = ContractArticle
-        fields = ('contract_article', 'value')
+        fields = ('contract_article', 'value', 'contract')
 
 
-AddArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), min_num=1, validate_min=True, extra=0)
-#class AddArticlesToContractFormSet(BaseFormSet):
+AddArticlesToContractFormSet = formset_factory(AddArticlesToContractForm, extra=0)
 
 
 class EditArticlesInContractForm(ModelForm):
@@ -81,7 +82,7 @@ class EditArticlesInContractForm(ModelForm):
         fields = ('contract_article', 'value')
 
 
-EditArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=6)
+EditArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=0)
 
 
 class EditContractForm(ModelForm):
