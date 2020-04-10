@@ -44,7 +44,7 @@ class Task(models.Model):
     def task_value(self):
         value = TaskArticles.objects.filter(task=self).aggregate(total=Sum('value'))['total']
         if value:
-            return value
+            return round(value, 2)
         return 0
 
     def engagement(self):
@@ -52,14 +52,14 @@ class Task(models.Model):
         engagement = 0
         for contract in contracts:
             engagement += contract.contract_value()
-        return engagement
+        return round(engagement, 2)
 
     def performance(self):
         contracts = Contract.objects.filter(task=self)
         performance = 0
         for contract in contracts:
             performance += contract.contract_performance()
-        return performance
+        return round(performance, 2)
 
 
 class Meta:
@@ -77,6 +77,11 @@ class TaskArticles(models.Model):
         default_related_name = 'task_articles'
         ordering = ('task',)
         verbose_name = 'task articles'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.article_id is not None:
+            super().save(force_insert, force_update, using, update_fields)
 
 
 class Contractor(models.Model):
@@ -97,13 +102,13 @@ class Contractor(models.Model):
         contracts_value = 0
         for contract in Contract.objects.filter(contractor=self):
             contracts_value += contract.contract_value()
-        return contracts_value
+        return round(contracts_value, 2)
 
     def contracts_performance(self):
         contracts_performance = 0
         for contract in Contract.objects.filter(contractor=self):
             contracts_performance += contract.contract_performance()
-        return contracts_performance
+        return round(contracts_performance, 2)
 
     class Meta:
         default_related_name = 'contractors'
@@ -128,7 +133,7 @@ class Contract(models.Model):
     def contract_value(self):
         value = ContractArticle.objects.filter(contract=self).aggregate(total=Sum('value'))['total']
         if value:
-            return value
+            return round(value, 2)
         return 0
 
     def contract_performance(self):
@@ -137,7 +142,7 @@ class Contract(models.Model):
         for fin_doc in fin_docs:
             # import pdb; pdb.set_trace()
             performance += fin_doc.fin_doc_value()
-        return performance
+        return round(performance, 2)
 
     class Meta:
         default_related_name = 'contract'
@@ -178,7 +183,7 @@ class FinancialDocument(models.Model):
     def fin_doc_value(self):
         value = FinDocumentArticle.objects.filter(fin_doc=self).aggregate(total=Sum('value'))['total']
         if value:
-            return value
+            return round(value, 2)
         return 0
 
     def __str__(self):

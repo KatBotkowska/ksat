@@ -14,15 +14,14 @@ class AddTaskForm(ModelForm):
         widgets = {
             'description': Textarea(attrs={'cols': 80, 'rows': 5}),
         }
-        # article = forms.ModelMultipleChoiceField(queryset=Articles.objects.all()) #TODO zobaczyc czy sie tak da
-        # help_texts = articles_fields
 
 
 class AddArticlesToTaskForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        task_id = kwargs.pop('initial')['task_id']
         super().__init__(*args, **kwargs)
-        # self.fields['task'].queryset = Task.objects.filter(id=task_id) #musi być filter, a nie get
+        task = self.initial.get('task')
+        if task is not None:
+            self.fields['contract_article'].queryset = Articles.objects.get.all()
 
     class Meta:
         model = TaskArticles
@@ -88,19 +87,6 @@ class AddArticlesToContractForm(ModelForm):
     class Meta:
         model = ContractArticle
         fields = ('contract_article', 'value', 'contract')
-
-# class BaseAddArticlesToContractFormSet(BaseFormSet):
-#     def clean(self):
-#         super().clean()
-#         for form in self.forms:
-#             task = form.cleaned_data.get('contract').task
-#             article = form.cleaned_data.get('contract_article')
-#             if article is not None:
-#                 if form.cleaned_data.get('value') > TaskArticles.objects.get(task=task, article=article).value:
-#                     raise forms.ValidationError('wartosc umowy na paragrafie wieksza niz wartosc zadania na paragrafie')
-
-
-
 
 
 class EditArticlesInContractForm(ModelForm):

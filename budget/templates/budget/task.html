@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load article_functions %}
 {% block header %}
     <title>Task {{ task.title }}</title>
 {% endblock %}
@@ -10,17 +11,19 @@
             <li>Unit: {{ task.unit }}</li>
             <li>Section: {{ task.section }}</li>
             <li>Description: {{ task.description }}</li>
-            <li>Total value: {{ task.task_value }}</li>
-            <li>Engagement: {{ task.engagement }}</li>
-            <li>Performance: {{ task.performance }}</li>
+            <li>Total value: {{ task.task_value }} PLN</li>
+            <li>Engagement: {{ task.engagement|floatformat:2 }} PLN</li>
+            <li>Performance: {{ task.performance|floatformat:2 }} PLN</li>
         </ul>
     </div>
     <div>
         <b>Financial Plan - Articles:</b>
         {% for article in task.task_articles.all %}
-            <ul>
-                <li>{{ article.article.total_number }} - {{ article.value }} PLN</li>
+
+            <ul> {% if article.value != 0 %}
+                <li>{{ article.article.total_number }}, value: {{ article.value }} PLN , engagement: {% task_article_engagement article.article task  %} PLN </li>{% endif %}
             </ul>
+
         {% endfor %}
 
     </div>
@@ -45,8 +48,8 @@
                     <td><a href="{{ contract.get_absolute_url }}">{{ contract.number }}</a></td>
                     <td>{{ contract.contractor }}</td>
                     <td>{{ contract.date }}</td>
-                    <td>{{ contract.contract_value }} </td>
-                    <td>{{ contract.contract_performance }}</td>
+                    <td>{{ contract.contract_value|floatformat:2 }} </td>
+                    <td>{{ contract.contract_performance|floatformat:2 }}</td>
                 </tr>
             {% empty %} No contracts for task
             {% endfor %}

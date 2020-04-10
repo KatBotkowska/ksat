@@ -37,54 +37,42 @@ class TaskDetailsView(DetailView):
 class AddTaskView(FormView):
     form_class = AddTaskForm
     template_name = 'budget/add_task.html'
-    success_url = reverse_lazy('budget:task_add_articles')
 
     def form_valid(self, form):
         task = form.save(commit=False)
         task.save()
-        # success_url = reverse_lazy('budget:task_add_articles', task.id)
         self.success_url = reverse('budget:task_add_articles', kwargs={'task_id': task.pk})
         return HttpResponseRedirect(self.success_url)
 
 
 # add articles to task
-class AddArticlesToTaskView(CreateView):
-    model = TaskArticles
-    form_class = AddArticlesToTaskForm
+class AddArticlesToTaskView(FormView):
     template_name = 'budget/add_articles_to_task.html'
     pk_url_kwarg = 'task_id'
-    success_url = reverse_lazy('budget:task_details')
+    success_url = ''
+
+    def get_task(self):
+        task_id = self.kwargs.get('task_id')
+        return Task.objects.get(id=task_id)
+
+    def get_form_class(self):
+        return formset_factory(AddArticlesToTaskForm, extra = 6)
+
+    def get_success_url(self):
+        return reverse('budget:task_details', kwargs= {'task_id': self.kwargs.get('task_id')})
+
+    def form_valid(self, form):
+        for single_form in form:
+            instance = single_form.save(commit=False)
+            instance.task = self.get_task()
+            instance.save()
+        return super().form_valid(form)
+
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        # ctx['task_id'] = self.kwargs.get('task_id')
-        ctx['formset'] = AddArticlesToTaskFormSet(queryset=Articles.objects.none())
-        ctx['task'] = Task.objects.get(pk=self.kwargs.get('task_id'))
+        ctx['task'] = self.get_task()
         return ctx
-
-    def get_initial(self):
-        self.initial.update({'task_id': self.kwargs['task_id']})
-        return super().get_initial()
-
-    def post(self, request, *args, **kwargs):
-        formset = AddArticlesToTaskFormSet(request.POST)
-        if formset.is_valid():
-            return self.form_valid(formset)
-
-    def form_valid(self, formset):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.task = Task.objects.get(id=self.initial.get('task_id'))
-            # articles = formset.save(commit=False)
-            # articles.save()
-            instance.save()
-        self.success_url = reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
-        import pdb;
-        pdb.set_trace()
-        return HttpResponseRedirect(self.success_url)
-
-    # def form_invalid(self, form):
-    #     print('not valid')
 
 
 class EditArticlesInTaskView(UpdateView):
@@ -96,7 +84,6 @@ class EditArticlesInTaskView(UpdateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        # ctx['task_id'] = self.kwargs.get('task_id')
         ctx['task'] = Task.objects.get(pk=self.kwargs.get('task_id'))
         ctx['formset'] = EditArticlesToTaskFormSet(queryset=TaskArticles.objects.filter(task=ctx['task']))
         return ctx
@@ -177,7 +164,7 @@ class AddArticlesToContractView(FormView):
 
     def get_form_class(self):
         contract = self.get_contract()
-        amount = contract.task.article.all().count()
+        #amount = contract.task.article.all().count()
         return formset_factory(AddArticlesToContractForm, extra=0)
 
     def get_success_url(self):
@@ -189,21 +176,27 @@ class AddArticlesToContractView(FormView):
             ca.save()
         return super().form_valid(form)
 
-
-
     def get_initial(self):
         contract = self.get_contract()
         amount = contract.task.article.all().count()
         return amount*[{'contract': contract}]
 
-
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['contract'] = self.get_contract()
+        return ctx
 
 class EditArticlesInContractView(UpdateView):
     model = ContractArticle
     form_class = EditArticlesInContractForm
     template_name = 'budget/contract_edit_articles.html'
     pk_url_kwarg = 'contract_id'
-    # success_url = reverse_lazy('budget:contract_details')
+
+    # def get_queryset(self):
+    #     contract = Contract.objects.get(id=self.kwargs.get('contract_id'))
+    #     #import pdb; pdb.set_trace()
+    #     return ContractArticle.objects.filter(contract=contract)
+    # # success_url = reverse_lazy('budget:contract_details')
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

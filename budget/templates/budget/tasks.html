@@ -26,9 +26,9 @@
                 <td>{{ task.description }}</td>
                 <td>{{ task.unit }}</td>
                 <td>{{ task.section }} </td>
-                <td>{{ task.task_value}}</td>
-                <td>{{ task.engagement }}</td>
-                <td>{{task.performance}}</td>
+                <td>{{ task.task_value|floatformat:2}}</td>
+                <td>{{ task.engagement|floatformat:2 }}</td>
+                <td>{{task.performance|floatformat:2}}</td>
             </tr>
         {% endfor %}
         </tbody>

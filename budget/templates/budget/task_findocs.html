@@ -31,7 +31,7 @@
                     <td>{{ findoc.date }}</td>
                     <td>{{ findoc.contract.number }}</td>
                     <td>{{ findoc.contractor }}</td>
-                    <td>{{ findoc.fin_doc_value }}</td>
+                    <td>{{ findoc.fin_doc_value|floatformat:2 }}</td>
                     <td>{{ findoc.payment_date1 }}</td>
                     <td>{% if findoc.payment_date2 %}{{ findoc.payment_date2 }}{% else %} No additional payements {% endif %}</td>
                 </tr>

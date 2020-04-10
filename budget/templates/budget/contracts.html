@@ -25,7 +25,7 @@
                     <td>{{ contract.date }}</td>
                     <td><a href="{% url 'budget:task_details' contract.task.id%}">{{ contract.task.title }}</a></td>
                     <td><a href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a></td>
-                    <td>{{ contract.contract_value }}</td>
+                    <td>{{ contract.contract_value|floatformat:2 }}</td>
                     <td>{{ contract.contract_performance }}</td>
                 </tr>
             {% endfor %}
