@@ -68,7 +68,6 @@ class AddArticlesToTaskView(FormView):
             instance.save()
         return super().form_valid(form)
 
-
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['task'] = self.get_task()
@@ -80,7 +79,7 @@ class EditArticlesInTaskView(UpdateView):
     form_class = EditArticlesInTaskForm
     template_name = 'budget/task_edit_articles.html'
     pk_url_kwarg = 'task_id'
-    success_url = reverse_lazy('budget:task_details')
+    success_url = ''
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)

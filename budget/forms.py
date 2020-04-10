@@ -35,7 +35,23 @@ class EditArticlesInTaskForm(ModelForm):
     class Meta:
         model = TaskArticles
         fields = ('article', 'value')
-
+#TODO walidacja do zrobienia
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     #task = cleaned_data.get('task')
+    #     article = cleaned_data.get('article')
+    #     value = cleaned_data.get('value')
+    #     if article is not None:
+    #         #nowy plan na paragrafie< zaangażowanie na paragr
+    #         article_engagement = ContractArticle.objects.filter(contract_article=article,
+    #                             contract__in=Contract.objects.filter(task=self.task)).aggregate(total=Sum('value'))['total']
+    #         print(article, article_engagement)
+    #         if article_engagement == None:
+    #             article_engagement = 0
+    #         #article_engagement = article_engagement
+    #         if value < article_engagement:
+    #             raise forms.ValidationError(f'na paragrafie jest zaangazowanie {article_engagement} wieksze niz nowy plan')
+    #     return self.cleaned_data
 
 EditArticlesToTaskFormSet = modelformset_factory(TaskArticles, fields=('article', 'value'), extra=4)
 
@@ -58,7 +74,6 @@ class AddContractForm(ModelForm):
         # article = forms.ModelMultipleChoiceField(queryset=Articles.objects.all()) #TODO zobaczyc czy sie tak da
 
 
-
 class AddArticlesToContractForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -79,7 +94,6 @@ class AddArticlesToContractForm(ModelForm):
                 article_engagement = 0
             article_engagement = article_engagement
             amount_to_engage = TaskArticles.objects.get(task=task, article=article).value - article_engagement
-            print(article_engagement)
             if self.cleaned_data.get('value') > amount_to_engage:
                 raise forms.ValidationError(f'wartosc umowy na paragrafie wieksza niz wartosc wolnych srodkow  zadania na paragrafie, na paragrafie zostało {amount_to_engage} wolne')
         return self.cleaned_data
@@ -103,6 +117,26 @@ class EditContractForm(ModelForm):
         model = Contract
         fields = ('number', 'date', 'task', 'contractor')
 
+    def clean(self):
+        cleaned_data = super().clean()
+        task = cleaned_data.get('task')
+        task_articles = TaskArticles.objects.filter(task=task)
+        contract_articles = ContractArticle.objects.filter(contract__contractor=cleaned_data.get('contractor'))
+        for article in [contract_article.contract_article for contract_article in contract_articles]:
+            if article not in [task_article.article for task_article in task_articles]:
+                raise forms.ValidationError(f'paragrafy na umowie nie grają z nowym zadaniem, sprawdz czy jest plan na zadaniu')
+            else:
+                task_article_engagement = ContractArticle.objects.filter(contract_article=article,
+                                    contract__in=Contract.objects.filter(
+                                                        task=task)).aggregate(total=Sum('value'))['total']
+                if task_article_engagement == None:
+                    task_article_engagement = 0
+                #task_article_engagement = task_article_engagement
+                amount_to_engage = TaskArticles.objects.get(task=task, article=article).value - task_article_engagement
+                if ContractArticle.objects.get(contract_article=article).value > amount_to_engage:
+                    raise forms.ValidationError(
+                        f'wartosc umowy na paragrafie {article} nowego zadania wieksza niz wartosc wolnych srodkow  zadania na paragrafie, na paragrafie zostało {amount_to_engage} wolne')
+        return self.cleaned_data
 
 # Forms for financial documents
 class AddFinancialDocForm(ModelForm):
