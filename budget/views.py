@@ -76,7 +76,7 @@ class AddArticlesToTaskView(FormView):
 
 class EditArticlesInTaskView(UpdateView):
     model = TaskArticles
-    form_class = EditArticlesInTaskForm
+    # form_class = EditArticlesInTaskForm
     template_name = 'budget/task_edit_articles.html'
     pk_url_kwarg = 'task_id'
     success_url = ''
@@ -84,26 +84,35 @@ class EditArticlesInTaskView(UpdateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['task'] = Task.objects.get(pk=self.kwargs.get('task_id'))
-        ctx['formset'] = EditArticlesToTaskFormSet(queryset=TaskArticles.objects.filter(task=ctx['task']))
+        ctx['form'] = EditArticlesToTaskFormSet(queryset=
+                                            TaskArticles.objects.filter(task=Task.objects.get(pk=self.kwargs.get('task_id'))))
         return ctx
 
-    def get_initial(self):
-        self.initial.update({'task_id': self.kwargs['task_id']})
-        return super().get_initial()
+    # def get_initial(self):
+    #     self.initial.update({'task_id': self.kwargs['task_id']})
+    #     return super().get_initial()
 
-    def post(self, request, *args, **kwargs):
-        formset = EditArticlesToTaskFormSet(request.POST)
-        if formset.is_valid():
-            return self.form_valid(formset)
+    # def post(self, request, *args, **kwargs):
+    #     formset = EditArticlesToTaskFormSet(request.POST)
+    #     if formset.is_valid():
+    #         return self.form_valid(formset)
+    def get_task(self):
+        task_id = self.kwargs.get('task_id')
+        return Task.objects.get(id=task_id)
 
-    def form_valid(self, formset):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            # import pdb; pdb.set_trace()
-            instance.task = Task.objects.get(pk=self.kwargs.get('task_id'))
+    def get_form_class(self):
+        EditArticlesToTaskFormSet =formset_factory(EditArticlesInTaskForm, extra = 6)
+        return EditArticlesToTaskFormSet
+
+    def get_success_url(self):
+        return reverse('budget:task_details', kwargs= {'task_id': self.kwargs.get('task_id')})
+
+    def form_valid(self, form):
+        for single_form in form:
+            instance = single_form.save(commit=False)
+            instance.task = self.get_task()
             instance.save()
-        self.success_url = reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
-        return HttpResponseRedirect(self.success_url)
+        return super().form_valid(form)
 
 
 class EditTaskView(UpdateView):

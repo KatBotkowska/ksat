@@ -35,6 +35,12 @@ class EditArticlesInTaskForm(ModelForm):
     class Meta:
         model = TaskArticles
         fields = ('article', 'value')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        task = self.kwargs.get('task')
+        if task is not None:
+            self.fields['article'].queryset = TaskArticles.objects.filter(task=task)
 #TODO walidacja do zrobienia
     # def clean(self):
     #     cleaned_data = super().clean()
