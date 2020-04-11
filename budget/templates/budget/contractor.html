@@ -16,14 +16,19 @@
     </div>
     <div>
         <b>Contracts:</b>
+    {% if not contractor.contracts.all %}
+        no contracts yet.
+    {% else %}
         {% for contract in contractor.contracts.all %}
             <ul>
                 <li><a href="{% url 'budget:contract_details' contract.id %}">Number: {{ contract.number }},</a>  date: {{ contract.date }}, value: {{ contract.contract_value }} PLN</li>
             </ul>
-        {% endfor %}
+        {% endfor %}{% endif %}
     </div>
     <div>
         <b>Financial documents for contractor:</b>
+    {% if not contractor.fds.all %} No documents yet.
+    {% else %}
         <table border="bold">
             <thead>
             <tr>
@@ -53,8 +58,10 @@
             {% endfor %}
             </tbody>
         </table>
+     <h3><a href="{% url 'budget:contractor-findocs' contractor.id %}">Financial documents for contractor - details</a></h3>
+    {% endif %}
     </div>
-    <h3><a href="{% url 'budget:contractor-findocs' contractor.id %}">Financial documents for contractor - details</a></h3>
+
     <h3><a href="{% url 'budget:edit_contractor' contractor.id %}">Edit contractor</a></h3>
     <h3><a href="{% url 'budget:delete_contractor' contractor.id %}">Delete contractor</a></h3>
 

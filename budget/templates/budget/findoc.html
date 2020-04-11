@@ -5,12 +5,17 @@
 {% block content %}
     {{ block.super }}
     <h2>Financial document {{ findoc.number }}</h2>
-    <h3>Contract: {{ findoc.contract.number }}</h3>
-    <h3>Contractor: {{ findoc.contractor }}</h3>
-    <h3>Task: {{ findoc.contract.task.title }}</h3>
-    <h3>Date: {{ findoc.date }}</h3>
-    <h3>Value: {{ findoc.fin_doc_value }}</h3>
-    <h3>Payment date: {{ findoc.payment_date1 }} and {{ findoc.payment_date2}}</h3>
+    <div>
+        <b>Document - general info:</b>
+<ul>
+    <li>Contract: <a href="{% url 'budget:contract_details' findoc.contract.id %}"> {{ findoc.contract.number }}</a></li>
+    <li>Contractor: <a href="{% url 'budget:contractor_details' findoc.contractor.id %}">{{ findoc.contractor }}</a></li>
+    <li>Task: <a href="{% url 'budget:task_details' findoc.contract.task.id %}">{{ findoc.contract.task.title }}</a> </li>
+    <li>Date: {{ findoc.date }}</li>
+    <li>Value: {{ findoc.fin_doc_value }} PLN</li>
+    <li>Payment date: {{ findoc.payment_date1 }} {% if findoc.payment_date2 %} and {{ findoc.payment_date2}}{% endif %}</li>
+</ul>
+    </div>
     <h3>Księgowania:...paragrafy </h3>
 
 

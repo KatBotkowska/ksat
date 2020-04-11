@@ -111,7 +111,7 @@ class EditArticlesInContractForm(ModelForm):
         fields = ('contract_article', 'value')
 
 
-EditArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=0)
+EditArticlesToContractFormSet = modelformset_factory(ContractArticle, fields=('contract_article', 'value'), extra=4)
 
 
 class EditContractForm(ModelForm):
@@ -146,7 +146,7 @@ class EditContractForm(ModelForm):
 class AddFinancialDocForm(ModelForm):
     class Meta:
         model = FinancialDocument
-        fields = ('contract', 'contractor', 'number', 'date', 'payment_date1', 'payment_date2')
+        fields = ('contract', 'number', 'date', 'payment_date1', 'payment_date2')
 
 
 class AddArticlesToFinDocForm(ModelForm):
@@ -166,7 +166,7 @@ AddArticlesToFinDocFormSet = modelformset_factory(FinDocumentArticle, fields=('a
 class EditFinDocForm(ModelForm):
     class Meta:
         model = FinancialDocument
-        fields = ('contract', 'contractor', 'number', 'date', 'payment_date1', 'payment_date2')
+        fields = ('contract',  'number', 'date', 'payment_date1', 'payment_date2')
 
 
 class EditArticlesInFinDocForm(ModelForm):
