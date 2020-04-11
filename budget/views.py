@@ -158,11 +158,11 @@ class AddArticlesToContractView(FormView):
     success_url = ""
 
     def get_contract(self):
-        id = self.kwargs.get('contract_id')
-        return Contract.objects.get(id=id)
+        contract_id = self.kwargs.get('contract_id')
+        return Contract.objects.get(id=contract_id)
 
     def get_form_class(self):
-        contract = self.get_contract()
+        #contract = self.get_contract()
         #amount = contract.task.article.all().count()
         return formset_factory(AddArticlesToContractForm, extra=0)
 
@@ -170,9 +170,10 @@ class AddArticlesToContractView(FormView):
         return reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
 
     def form_valid(self, form):
-        for item in form:
-            ca = item.save(commit=False)
-            ca.save()
+        for single_form in form:
+            instance = single_form.save(commit=False)
+            instance.contract = self.get_contract()
+            instance.save()
         return super().form_valid(form)
 
     def get_initial(self):

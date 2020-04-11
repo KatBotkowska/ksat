@@ -80,12 +80,14 @@ class AddArticlesToContractForm(ModelForm):
         contract = self.initial.get('contract')
         if contract is not None:
             self.fields['contract_article'].queryset = contract.task.article.all()
-            self.fields['contract'].queryset = Contract.objects.filter(id=contract.id)
-            self.fields['contract'].empty_label = None
+            #self.fields['contract'].queryset = Contract.objects.filter(id=contract.id)
+            #self.fields['contract'].empty_label = None
 
     def clean(self):
         cleaned_data = super().clean()
-        task = cleaned_data.get('contract').task
+        contract = self.initial.get('contract')
+        task = contract.task
+        #task = cleaned_data.get('contract').task
         article = cleaned_data.get('contract_article')
         if article is not None:
             #wartosc umowy na paragr>plan na paragrafie - zaangażowanie na paragr
@@ -100,8 +102,8 @@ class AddArticlesToContractForm(ModelForm):
 
     class Meta:
         model = ContractArticle
-        fields = ('contract_article', 'value', 'contract')
-
+        #fields = ('contract_article', 'value', 'contract')
+        fields = ('contract_article', 'value')
 
 class EditArticlesInContractForm(ModelForm):
     class Meta:
@@ -119,24 +121,26 @@ class EditContractForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        original_task = Task.objects.get(id=self.initial.get('task'))
         task = cleaned_data.get('task')
-        task_articles = TaskArticles.objects.filter(task=task)
-        contract_articles = ContractArticle.objects.filter(contract__contractor=cleaned_data.get('contractor'))
-        for article in [contract_article.contract_article for contract_article in contract_articles]:
-            if article not in [task_article.article for task_article in task_articles]:
-                raise forms.ValidationError(f'paragrafy na umowie nie grają z nowym zadaniem, sprawdz czy jest plan na zadaniu')
-            else:
-                task_article_engagement = ContractArticle.objects.filter(contract_article=article,
-                                    contract__in=Contract.objects.filter(
-                                                        task=task)).aggregate(total=Sum('value'))['total']
-                if task_article_engagement == None:
-                    task_article_engagement = 0
-                #task_article_engagement = task_article_engagement
-                amount_to_engage = TaskArticles.objects.get(task=task, article=article).value - task_article_engagement
-                if ContractArticle.objects.get(contract_article=article).value > amount_to_engage:
-                    raise forms.ValidationError(
-                        f'wartosc umowy na paragrafie {article} nowego zadania wieksza niz wartosc wolnych srodkow  zadania na paragrafie, na paragrafie zostało {amount_to_engage} wolne')
-        return self.cleaned_data
+        if original_task != task:
+            task_articles = TaskArticles.objects.filter(task=task)
+            contract_articles = ContractArticle.objects.filter(contract__contractor=cleaned_data.get('contractor'))
+            for article in [contract_article.contract_article for contract_article in contract_articles]:
+                if article not in [task_article.article for task_article in task_articles]:
+                    raise forms.ValidationError(f'paragrafy na umowie nie grają z nowym zadaniem, sprawdz czy jest plan na zadaniu')
+                else:
+                    task_article_engagement = ContractArticle.objects.filter(contract_article=article,
+                                        contract__in=Contract.objects.filter(
+                                                            task=task)).aggregate(total=Sum('value'))['total']
+                    if task_article_engagement == None:
+                        task_article_engagement = 0
+                    #task_article_engagement = task_article_engagement
+                    amount_to_engage = TaskArticles.objects.get(task=task, article=article).value - task_article_engagement
+                    if ContractArticle.objects.get(contract_article=article).value > amount_to_engage:
+                        raise forms.ValidationError(
+                            f'wartosc umowy na paragrafie {article} nowego zadania wieksza niz wartosc wolnych srodkow  zadania na paragrafie, na paragrafie zostało {amount_to_engage} wolne')
+            return self.cleaned_data
 
 # Forms for financial documents
 class AddFinancialDocForm(ModelForm):
