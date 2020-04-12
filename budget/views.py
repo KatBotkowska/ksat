@@ -141,7 +141,7 @@ class ContractDetailsView(DetailView):
     def render_to_response(self, context, **response_kwargs):
         response = super().render_to_response(context, **response_kwargs)
         contract_id = Contract.objects.get(id=self.kwargs.get('contract_id')).id
-        response.set_cookie('contract', contract_id)
+        response.set_cookie('contract', contract_id, max_age=30)
         return response
 
 
