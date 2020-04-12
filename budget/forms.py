@@ -144,9 +144,17 @@ class EditContractForm(ModelForm):
 
 # Forms for financial documents
 class AddFinancialDocForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        contract_id = self.initial.get('contract_id')
+        print('contract', contract_id)
+        if contract_id is not None:
+            self.fields['contract'].queryset = Contract.objects.filter(id=contract_id)
+            self.fields['contract'].empty_label = None
     class Meta:
         model = FinancialDocument
         fields = ('contract', 'number', 'date', 'payment_date1', 'payment_date2')
+
     def clean(self):
         cleaned_data = super().clean()
         ##walidacja dat
@@ -207,6 +215,28 @@ class EditFinDocForm(ModelForm):
             raise forms.ValidationError(f'Data platności {payment_date1} nie moze byc wczesniejsza niz data dokumentu {date}')
         if (payment_date2 and payment_date2<date):
             raise forms.ValidationError(f'Data platności {payment_date2} nie moze byc wczesniejsza niz data dokumentu {date}')
+        #walidacja zmiany umowy czy paragrafy pasują
+        original_contract = Contract.objects.get(id=self.initial.get('contract'))
+        contract = cleaned_data.get('contract')
+        if original_contract != contract:
+            contract_articles = ContractArticle.objects.filter(contract=contract)
+            findoc_articles = FinDocumentArticle.objects.filter(fin_doc = self.instance)
+            for article in [findoc_article.article for findoc_article in findoc_articles]:
+                if article not in [contract_article.contract_article for contract_article in contract_articles]:
+                    raise forms.ValidationError(
+                        f'paragrafy na dokumencie nie grają z nową umową, sprawdz paragrafy umowy')
+                else:
+                    contract_article_performance = FinDocumentArticle.objects.filter(article=article,
+                                                fin_doc__in=FinancialDocument.objects.filter(
+                                                contract=contract)).aggregate(total=Sum('value'))['total']
+                    if contract_article_performance == None:
+                        contract_article_performance = 0
+                    amount = ContractArticle.objects.get(contract=contract, contract_article=article).value - contract_article_performance
+
+                    if FinDocumentArticle.objects.get(article=article, fin_doc=self.instance).value > amount:
+                        raise forms.ValidationError(
+                            f'wartosc dokumentu na paragrafie {article} nowej umowy wieksza niz wartosc wolnych srodkow  '
+                            f'umowy na paragrafie, na paragrafie zostało {amount} wolne')
         return self.cleaned_data
 
 class EditArticlesInFinDocForm(ModelForm):

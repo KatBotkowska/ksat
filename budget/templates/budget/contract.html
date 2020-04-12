@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load article_functions %}
 {% block header %}
     <title>Contract {{ contract.number }}</title>
 {% endblock %}
@@ -8,8 +9,10 @@
     <div><b>General info:</b>
         <ul>
             <li>Date: {{ contract.date }}</li>
-            <li>Task: <a href="{% url 'budget:task_details' contract.task.id %}">{{ contract.task.title }}</a> </li>
-            <li>Contractor: <a href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a> </li>
+            <li>Task: <a href="{% url 'budget:task_details' contract.task.id %}">{{ contract.task.title }}</a></li>
+            <li>Contractor: <a
+                    href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a>
+            </li>
             <li>Total value: {{ contract.contract_value }}</li>
             <li>Performance: {{ contract.contract_performance }}</li>
         </ul>
@@ -18,36 +21,26 @@
         <b>Financial Plan for Contract:</b>
         {% for article in contract.contract_articles.all %}
             <ul>
-                <li>{{ article.contract_article.total_number }}: {{ article.value }} PLN</li>
+                <li>{{ article.contract_article.total_number }}: {{ article.value }} PLN,
+                    performance: {% contract_article_performance article.contract_article contract %} PLN
+                </li>
             </ul>
         {% endfor %}
 
     </div>
     {% if not contract.contract_performance %}
-    <div>No financial document for contract. You can add one <a href="{% url 'budget:add_findoc' %}">here</a></div>
+        <div>No financial document for contract. You can add one <a href="{% url 'budget:add_findoc' %}">here</a></div>
     {% else %}
-    <div>
-        <b>Financial documents for contract:</b>
-        <table border="bold">
-            <thead>
-            <tr>
-                <td>Id</td>
-                <td>Number</td>
-                <td>Date</td>
-            </tr>
-            </thead>
-            <tbody>
-            {% for fd in contract.fds.all %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
-                    <td>{{ fd.date }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        <h3><a href="{% url 'budget:contract-findocs' contract.id %}">Financial documents for contract - details</a></h3>
-    </div>
+        <div>
+            <b>Financial documents for contract:</b>
+            <ul>
+                {% for fd in contract.fds.all %}
+                    <li><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a>, date: {{ fd.date }}</li>
+                {% endfor %}
+            </ul>
+            <h3><a href="{% url 'budget:contract-findocs' contract.id %}">Financial documents for contract - details</a>
+            </h3>
+        </div>
     {% endif %}
 
     <h3><a href="{% url 'budget:edit_contract' contract.id %}">Edit contract</a></h3>

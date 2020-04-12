@@ -138,6 +138,12 @@ class ContractDetailsView(DetailView):
     pk_url_kwarg = 'contract_id'
     context_object_name = 'contract'
 
+    def render_to_response(self, context, **response_kwargs):
+        response = super().render_to_response(context, **response_kwargs)
+        contract_id = Contract.objects.get(id=self.kwargs.get('contract_id')).id
+        response.set_cookie('contract', contract_id)
+        return response
+
 
 class AddContractView(FormView):
     form_class = AddContractForm
@@ -340,6 +346,13 @@ class AddFinancialDocView(FormView):
     form_class = AddFinancialDocForm
     template_name = 'budget/add_findoc.html'
     success_url = reverse_lazy('budget:findoc_add_articles')
+
+    def get_initial(self):
+        if 'contract' in self.request.COOKIES:
+            initial = super().get_initial()
+            initial['contract_id'] =  int(self.request.COOKIES.get('contract'))
+            return initial
+
 
     def form_valid(self, form):
         findoc = form.save(commit=False)

@@ -16,7 +16,14 @@
     <li>Payment date: {{ findoc.payment_date1 }} {% if findoc.payment_date2 %} and {{ findoc.payment_date2}}{% endif %}</li>
 </ul>
     </div>
-    <h3>Księgowania:...paragrafy </h3>
+    <div><h3>Accounting: </h3>
+    <ul>
+    {% for article in findoc.findocumentarticle_set.all %}
+        <li>{{ article.article }} - {{ article.value }} PLN</li>
+    {% endfor %}</ul>
+    </div>
+
+
 
 
     <h3><a href="{% url 'budget:edit_doc' findoc.id %}">Edit document</a></h3>

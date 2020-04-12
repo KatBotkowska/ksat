@@ -22,13 +22,13 @@
                 <td><a href="{{ contractor.get_absolute_url }}">{{ contractor }}</a></td>
                 <td>{{ contractor.num }}</td>
                 <td>{% if contractor.contracts.all %}
-                    {% for contract in  contractor.contracts.all %}
+                 <ul>   {% for contract in  contractor.contracts.all %}
 
-                            <span><a href="{% url 'budget:contract_details' contract.id %}">{{ contract.number }},
+                            <li><a href="{% url 'budget:contract_details' contract.id %}">{{ contract.number }},
                                 value: {{ contract.contract_value }},
-                                performance: {{ contract.contract_performance }}</a></span>
+                                performance: {{ contract.contract_performance }}</a></li>
 
-                    {% endfor %}
+                    {% endfor %}</ul>
                 {% else %}
                     No contracts yet
                 {% endif %}</td>

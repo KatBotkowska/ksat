@@ -21,7 +21,10 @@
         {% for article in task.task_articles.all %}
 
             <ul> {% if article.value != 0 %}
-                <li>{{ article.article.total_number }}, value: {{ article.value }} PLN , engagement: {% task_article_engagement article.article task  %} PLN </li>{% endif %}
+                <li>{{ article.article.total_number }}, value: {{ article.value }} PLN ,
+                    engagement: {% task_article_engagement article.article task  %} PLN,
+                    performance: {% task_article_performance article.article task %} PLN
+                </li>{% endif %}
             </ul>
 
         {% endfor %}

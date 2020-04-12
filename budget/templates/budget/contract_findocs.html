@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
+{% load article_functions %}
 {% block header %}
     <title>Financial Document for Contract: {{ contract.number }}s</title>
 {% endblock %}
 {% block content %}
     {{ block.super }}
     <h2>Contract: {{ contract.number }}</h2>
-    <h2>Contractor: {{ contract.contractor }}</h2>
-    <h2>Task: {{ contract.task.title }}</h2>
-    <h3>Contract value: {{ contract.contract_value }}</h3>
-    <h3>Contract peformance: {{ contract.contract_performance }}</h3>
-    {%  if not contract.contract_performance %}
-    No financial document for this contract yet.
+    <h4>Contractor: {{ contract.contractor }}</h4>
+    <h4>Task: {{ contract.task.title }}</h4>
+    <h4>Contract value: {{ contract.contract_value }}</h4>
+    <h4>Contract peformance: {{ contract.contract_performance }}</h4>
+    {% if not contract.contract_performance %}
+        No financial document for this contract yet.
     {% else %}
         <table border="bold">
             <thead>
@@ -19,8 +20,12 @@
                 <td>Number</td>
                 <td>Date</td>
                 <td>Value</td>
-                <td>Payement Date -1</td>
-                <td>Payement Date -2</td>
+                <td>Payment Date -1</td>
+                <td>Payment Date -2</td>
+                {% for article in contract.article.all %}
+                    <td>{{ article.total_number }}</td>
+                {% endfor %}
+            <td>Sum</td>
             </tr>
             </thead>
             <tbody>
@@ -31,9 +36,30 @@
                     <td>{{ findoc.date }}</td>
                     <td>{{ findoc.fin_doc_value|floatformat:2 }}</td>
                     <td>{{ findoc.payment_date1 }}</td>
-                    <td>{% if findoc.payment_date2 %}{{ findoc.payment_date2 }}{% else %} No additional payements {% endif %}</td>
+                    <td>{% if findoc.payment_date2 %}{{ findoc.payment_date2 }}{% else %} No additional
+                        payements {% endif %}</td>
+
+                    {% for article in contract.article.all %}
+                        <td>   {% for findoc_article in findoc.findocumentarticle_set.all %}
+
+                         {% if findoc_article.article == article %}
+                        {{ findoc_article.value }}
+
+                        {% endif %}
+                            {% endfor %}</td>
+
+                    {% endfor %}
+                <td>{{ findoc.fin_doc_value }}</td>
+                </tr>{% endfor %}
+                <tr>
+            <td colspan="6">Sum</td>
+
+                {% for article in contract.contract_articles.all %}
+                  <td>{% contract_article_performance article.contract_article contract %}</td>
+                    {% endfor %} </td>
+                <td>{{ contract.contract_performance }}
                 </tr>
-            {% endfor %}
+
             </tbody>
         </table>
     {% endif %}
