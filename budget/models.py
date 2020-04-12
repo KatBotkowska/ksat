@@ -117,7 +117,7 @@ class Contractor(models.Model):
 
 
 class Contract(models.Model):
-    number = models.CharField(max_length=128)
+    number = models.CharField(max_length=128, unique=True)
     date = models.DateField()
     task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='contracts', related_query_name='contract')
     contractor = models.ForeignKey(Contractor, default=None, on_delete=models.CASCADE, related_name='contracts',
@@ -202,3 +202,8 @@ class FinDocumentArticle(models.Model):
     def fin_doc_value(self, fin_doc):
         return self.objects.filter(fin_doc=fin_doc).aggregate(total=Sum('value'), output_field=models.DecimalField(
             decimal_places=2))
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.article_id is not None:
+            super().save(force_insert, force_update, using, update_fields)

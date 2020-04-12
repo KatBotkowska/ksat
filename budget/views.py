@@ -349,38 +349,39 @@ class AddFinancialDocView(FormView):
         return HttpResponseRedirect(self.success_url)
 
 
-class AddArticlesToFinDocView(CreateView):
-    model = FinDocumentArticle
-    form_class = AddArticlesToFinDocForm
+class AddArticlesToFinDocView(FormView):
+    #model = FinDocumentArticle
+    #form_class = AddArticlesToFinDocForm
     template_name = 'budget/add_articles_to_findoc.html'
     pk_url_kwarg = 'findoc_id'
-    success_url = reverse_lazy('budget:findoc_details')
+    success_url = ''
+
+    def get_findoc(self):
+        findoc_id = self.kwargs.get('findoc_id')
+        return FinancialDocument.objects.get(id=findoc_id)
+
+    def get_form_class(self):
+        return formset_factory(AddArticlesToFinDocForm, extra=0)
+
+    def get_success_url(self):
+        return reverse('budget:findoc_details', kwargs={'findoc_id': self.kwargs.get('findoc_id')})
+
+    def form_valid(self, form):
+        for single_form in form:
+            instance = single_form.save(commit=False)
+            instance.fin_doc = self.get_findoc()
+            instance.save()
+        return super().form_valid(form)
+
+    def get_initial(self):
+        findoc = self.get_findoc()
+        amount = findoc.contract.article.all().count()
+        return amount * [{'findoc': findoc}]
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        # ctx['task_id'] = self.kwargs.get('task_id')
-        ctx['formset'] = AddArticlesToFinDocFormSet(queryset=FinancialDocument.objects.none())
-        ctx['findoc'] = FinancialDocument.objects.get(pk=self.kwargs.get('findoc_id'))
+        ctx['findoc'] = self.get_findoc()
         return ctx
-
-    def get_initial(self):
-        self.initial.update({'findoc_id': self.kwargs['findoc_id']})
-        return super().get_initial()
-
-    def post(self, request, *args, **kwargs):
-        formset = AddArticlesToFinDocFormSet(request.POST)
-        if formset.is_valid():
-            return self.form_valid(formset)
-
-    def form_valid(self, formset):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            instance.fin_doc = FinancialDocument.objects.get(id=self.initial.get('findoc_id'))  #####instance>???
-            instance.save()
-        self.success_url = reverse('budget:findoc_details', kwargs={'findoc_id': self.kwargs.get('findoc_id')})
-        # import pdb;
-        # pdb.set_trace()
-        return HttpResponseRedirect(self.success_url)
 
 
 class EditFinancialDocView(UpdateView):

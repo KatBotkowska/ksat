@@ -147,13 +147,42 @@ class AddFinancialDocForm(ModelForm):
     class Meta:
         model = FinancialDocument
         fields = ('contract', 'number', 'date', 'payment_date1', 'payment_date2')
+    def clean(self):
+        cleaned_data = super().clean()
+        ##walidacja dat
+        date = cleaned_data.get('date')
+        payment_date1 = cleaned_data.get('payment_date1')
+        payment_date2 = cleaned_data.get('payment_date2')
+        if payment_date1<date:
+            raise forms.ValidationError(f'Data platności {payment_date1} nie moze byc wczesniejsza niz data dokumentu {date}')
+        if (payment_date2 and payment_date2<date):
+            raise forms.ValidationError(f'Data platności {payment_date2} nie moze byc wczesniejsza niz data dokumentu {date}')
+        return self.cleaned_data
 
 
 class AddArticlesToFinDocForm(ModelForm):
     def __init__(self, *args, **kwargs):
-        findoc_id = kwargs.pop('initial')['findoc_id']
         super().__init__(*args, **kwargs)
-        # self.fields['contract'].queryset = Contract.objects.filter(id=contract_id) #musi być filter, a nie get
+        findoc = self.initial.get('findoc')
+        if findoc is not None:
+            self.fields['article'].queryset = findoc.contract.article.all()
+            self.empty_permitted = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        findoc = self.initial.get('findoc')
+        contract = findoc.contract
+        article = cleaned_data.get('article')
+        if article is not None:
+            #wartosc findoc na paragr!>umowa na paragrafie - inne findoc na paragr
+            article_performance = FinDocumentArticle.objects.filter(article=article, fin_doc__in=FinancialDocument.objects.filter(contract=contract)).aggregate(total=Sum('value'))['total']
+            if article_performance == None:
+                article_performance = 0
+            amount = ContractArticle.objects.get(contract=contract, contract_article=article).value - article_performance
+            if self.cleaned_data.get('value') > amount:
+                raise forms.ValidationError(f'wartosc findoc na paragrafie wieksza niz wartosc wolnych srodkow  umowy na paragrafie, na paragrafie zostało {amount} wolne')
+        return self.cleaned_data
+
 
     class Meta:
         model = FinDocumentArticle
@@ -168,6 +197,17 @@ class EditFinDocForm(ModelForm):
         model = FinancialDocument
         fields = ('contract',  'number', 'date', 'payment_date1', 'payment_date2')
 
+    def clean(self):
+        cleaned_data = super().clean()
+        ##walidacja dat
+        date = cleaned_data.get('date')
+        payment_date1 = cleaned_data.get('payment_date1')
+        payment_date2 = cleaned_data.get('payment_date2')
+        if payment_date1<date:
+            raise forms.ValidationError(f'Data platności {payment_date1} nie moze byc wczesniejsza niz data dokumentu {date}')
+        if (payment_date2 and payment_date2<date):
+            raise forms.ValidationError(f'Data platności {payment_date2} nie moze byc wczesniejsza niz data dokumentu {date}')
+        return self.cleaned_data
 
 class EditArticlesInFinDocForm(ModelForm):
     class Meta:
@@ -175,4 +215,4 @@ class EditArticlesInFinDocForm(ModelForm):
         fields = ('article', 'value')
 
 
-EditArticlesToFinDocFormSet = modelformset_factory(FinDocumentArticle, fields=('article', 'value'), extra=6)
+EditArticlesToFinDocFormSet = modelformset_factory(FinDocumentArticle, fields=('article', 'value'), extra=0)

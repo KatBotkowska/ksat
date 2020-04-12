@@ -17,6 +17,14 @@
 {% endblock %}
 {% block content %}
     <h1>Ksat - to manage project budget</h1>
+    <div>Inside the Ksat:
+    <ul>
+        <li><a href="{% url 'budget:tasks' %}"> Tasks</a></li>
+        <li><a href="{% url 'budget:contractors' %}">Contractors</a></li>
+        <li><a href="{% url 'budget:contracts' %}"> Contracts</a></li>
+        <li> Financial Documents - go by conract details</li>
+        <li><a href="{% url 'budget:add_findoc' %}">Add financial document</a></li>
+    </ul></div>
 
 {% endblock %}
 

@@ -34,9 +34,6 @@
                 <td>Id</td>
                 <td>Number</td>
                 <td>Date</td>
-                <td>Payment date (first)</td>
-                <td>Payment date (second</td>
-                <td>Value</td>
             </tr>
             </thead>
             <tbody>
@@ -45,9 +42,6 @@
                     <td>{{ forloop.counter }}</td>
                     <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
                     <td>{{ fd.date }}</td>
-                    <td>{{ fd.payment_date1 }}</td>
-                    <td>{% if fd.payment_date2 %}{{ fd.payment_date2 }} {% else %} No additional payements {% endif %}</td>
-                    <td>{{ fd.fin_doc_value }}</td>
                 </tr>
             {% endfor %}
             </tbody>
