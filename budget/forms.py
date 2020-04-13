@@ -147,7 +147,6 @@ class AddFinancialDocForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         contract_id = self.initial.get('contract_id')
-        print('contract', contract_id)
         if contract_id is not None:
             self.fields['contract'].queryset = Contract.objects.filter(id=contract_id)
             self.fields['contract'].empty_label = None
@@ -158,9 +157,12 @@ class AddFinancialDocForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         ##walidacja dat
+        contract_date = cleaned_data.get('contract').date
         date = cleaned_data.get('date')
         payment_date1 = cleaned_data.get('payment_date1')
         payment_date2 = cleaned_data.get('payment_date2')
+        if date<contract_date:
+            raise forms.ValidationError(f'Data dokumentu {date} nie moze byc wczesniejsza niz data umowy {contract_date}')
         if payment_date1<date:
             raise forms.ValidationError(f'Data platności {payment_date1} nie moze byc wczesniejsza niz data dokumentu {date}')
         if (payment_date2 and payment_date2<date):

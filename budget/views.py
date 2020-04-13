@@ -429,9 +429,8 @@ class EditArticlesInFinDocView(FormView):
 
     def post(self, request, *args, **kwargs):
         formset = EditArticlesToFinDocFormSet(request.POST)
-        for form in formset:
-            if form.is_valid():
-                form.save()
+        if formset.is_valid():
+            return self.form_valid(formset)
 
     def form_valid(self, formset):
         instances = formset.save(commit=False)
