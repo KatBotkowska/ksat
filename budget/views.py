@@ -33,6 +33,12 @@ class TaskDetailsView(DetailView):
     context_object_name = 'task'
     pk_url_kwarg = 'task_id'
 
+    def render_to_response(self, context, **response_kwargs):
+        response = super().render_to_response(context, **response_kwargs)
+        task_id = Task.objects.get(id=self.kwargs.get('task_id')).id
+        response.set_cookie('task_id', task_id, max_age=30)
+        return response
+
 
 class AddTaskView(FormView):
     form_class = AddTaskForm
@@ -84,6 +90,7 @@ class EditArticlesInTaskView(UpdateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['task'] = Task.objects.get(pk=self.kwargs.get('task_id'))
+        #ctx['formset'] = EditArticlesToTaskFormSet()
         ctx['formset'] = EditArticlesToTaskFormSet(queryset=TaskArticles.objects.filter(task=ctx['task']))
         return ctx
 
@@ -155,6 +162,12 @@ class AddContractView(FormView):
         contract.save()
         self.success_url = reverse('budget:contract_add_articles', kwargs={'contract_id': contract.pk})
         return HttpResponseRedirect(self.success_url)
+
+    def get_initial(self):
+        if 'task_id' in self.request.COOKIES:
+            initial = super().get_initial()
+            initial['task_id'] =  int(self.request.COOKIES.get('task_id'))
+            return initial
 
 
 class AddArticlesToContractView(FormView):

@@ -61,9 +61,9 @@
     </div>
     {% else %}
         <div>
-        No contracts for task. You can add a new one in menu <a href="{% url 'budget:contracts' %}">contracts.</a>
+        No contracts for task.
         </div>
-    {% endif %}
+    {% endif %}<a href="{% url 'budget:add_contract' %}">You can add a new contract for that task.</a>
     {% if task.performance %}
         <div>
         <h3><a href="{% url 'budget:task-findocs' task.id %}">Financial documents for task - details</a></h3>
