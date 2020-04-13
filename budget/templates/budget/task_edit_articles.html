@@ -7,9 +7,9 @@
     <h3>Edit articles in task: {{ task.title }}</h3>
     <form action="" method="post">
         {% csrf_token %}
-        {{ formset.management_form }}
-        {% for form in formset %}
-            {{ form.as_p }}
+        {{ form.management_form }}
+        {% for single_form in form %}
+            {{ single_form.as_p }}
         {% endfor %}
         <div><input type="submit" value="Save"></div>
     </form>
