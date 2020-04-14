@@ -1,4 +1,4 @@
-from django.forms import formset_factory
+from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
@@ -6,7 +6,7 @@ from django.views.generic import ListView, CreateView, DetailView, DeleteView, U
 from django.views.generic.base import View, TemplateView
 
 from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet, EditArticlesInTaskForm, \
-    EditTaskForm, AddContractForm, AddArticlesToContractForm, \
+    EditArticlesInTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
     EditContractForm, EditArticlesInContractForm, EditArticlesToContractFormSet, AddFinancialDocForm, \
     AddArticlesToFinDocForm, AddArticlesToFinDocFormSet, EditFinDocForm, EditArticlesInFinDocForm, \
     EditArticlesToFinDocFormSet
@@ -82,7 +82,7 @@ class AddArticlesToTaskView(FormView):
 
 class EditArticlesInTaskView(UpdateView):
     model = TaskArticles
-    # form_class = EditArticlesInTaskForm
+    form_class = EditArticlesInTaskForm
     template_name = 'budget/task_edit_articles.html'
     pk_url_kwarg = 'task_id'
     success_url = ''
@@ -91,12 +91,17 @@ class EditArticlesInTaskView(UpdateView):
         task_id = self.kwargs.get('task_id')
         return Task.objects.get(id=task_id)
 
-    def get_form_class(self):
-        EditArticlesInTaskFormSet = formset_factory(EditArticlesInTaskForm, extra=0)
-        return EditArticlesInTaskFormSet
-
     def get_success_url(self):
         return reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
+
+    def post(self, request, *args, **kwargs):
+        formset = EditArticlesInTaskFormSet(request.POST)
+        if formset.is_valid():
+            return self.form_valid(formset)
+        #return HttpResponse(formset)
+
+    def form_invalid(self, formset):
+        return self.render_to_response(self.get_context_data(formset=formset))
 
     def form_valid(self, form):
         for single_form in form:
@@ -105,14 +110,11 @@ class EditArticlesInTaskView(UpdateView):
             instance.save()
         return super().form_valid(form)
 
-    def get_initial(self):
-        task = self.get_task()
-        amount = task.article.all().count()
-        return amount*[{'task': task}]
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['task'] = self.get_task()
+        ctx['formset'] =EditArticlesInTaskFormSet(queryset=TaskArticles.objects.filter(task=self.get_task()))
         return ctx
 
 

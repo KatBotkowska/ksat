@@ -5,11 +5,13 @@
 {% block content %}
     {{ block.super }}
     <h3>Edit articles in task: {{ task.title }}</h3>
+    {{ formset.non_form_errors }}
     <form action="" method="post">
         {% csrf_token %}
-        {{ form.management_form }}
-        {% for single_form in form %}
-            {{ single_form.as_p }}
+        {{ formset.management_form }}
+        {% for single_form in formset %}
+
+            {{ single_form.as_p }}{{ single_form.non_field_errors }}
         {% endfor %}
         <div><input type="submit" value="Save"></div>
     </form>
