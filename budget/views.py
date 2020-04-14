@@ -95,9 +95,11 @@ class EditArticlesInTaskView(UpdateView):
         return reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
 
     def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
         formset = EditArticlesInTaskFormSet(request.POST)
         if formset.is_valid():
             return self.form_valid(formset)
+        return self.form_invalid(formset)
         #return HttpResponse(formset)
 
     def form_invalid(self, formset):
