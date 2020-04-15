@@ -7,9 +7,9 @@ from django.views.generic.base import View, TemplateView
 
 from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet, EditArticlesInTaskForm, \
     EditArticlesInTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
-    EditContractForm, EditArticlesInContractForm, EditArticlesToContractFormSet, AddFinancialDocForm, \
+    EditContractForm, EditArticlesInContractForm, EditArticlesInContractFormSet, AddFinancialDocForm, \
     AddArticlesToFinDocForm, AddArticlesToFinDocFormSet, EditFinDocForm, EditArticlesInFinDocForm, \
-    EditArticlesToFinDocFormSet
+    EditArticlesInFinDocFormSet
 
 from .models import Articles, Task, Contractor, Contract, FinancialDocument, \
     TaskArticles, ContractArticle, FinDocumentArticle
@@ -86,6 +86,12 @@ class EditArticlesInTaskView(UpdateView):
     template_name = 'budget/task_edit_articles.html'
     pk_url_kwarg = 'task_id'
     success_url = ''
+
+    def get_object(self, queryset=None):
+        return self.get_task()
+
+    def get_queryset(self):
+        return TaskArticles.objects.filter(task=self.get_task())
 
     def get_task(self):
         task_id = self.kwargs.get('task_id')
@@ -208,37 +214,52 @@ class AddArticlesToContractView(FormView):
         return ctx
 
 
-class EditArticlesInContractView(FormView):
+class EditArticlesInContractView(UpdateView):
     model = ContractArticle
     form_class = EditArticlesInContractForm
     template_name = 'budget/contract_edit_articles.html'
     pk_url_kwarg = 'contract_id'
-    success_url = reverse_lazy('budget:contract_details')
+    success_url = ''
+
+    def get_object(self, queryset=None):
+        return self.get_contract()
+
+    def get_queryset(self):
+        # contract = Contract.objects.get(pk=self.kwargs.get('contract_id'))
+        # articles = ContractArticle.objects.filter(contract=contract)
+        # return articles
+        return ContractArticle.objects.filter(contract=self.get_contract())
+
+    def get_contract(self):
+        contract_id = int(self.kwargs.get('contract_id'))
+        return Contract.objects.get(pk=contract_id)
+
+    def get_success_url(self):
+        return reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        formset = EditArticlesInContractFormSet(request.POST)
+        if formset.is_valid():
+            return self.form_valid(formset)
+        return self.form_invalid(request, formset)
+
+    def form_invalid(self, request, formset):
+        return render(request, self.template_name, {"formset": formset})
+
+    def form_valid(self, form):
+        for single_form in form:
+            instance = single_form.save(commit=False)
+            instance.contract = self.get_contract()
+            instance.save()
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        contract = Contract.objects.get(id=self.kwargs.get('contract_id'))
-        ctx['contract'] = contract
-        ctx['formset'] = EditArticlesToContractFormSet(queryset=ContractArticle.objects.filter(contract=contract))
+        ctx['contract'] = self.get_contract()
+        ctx['formset'] = EditArticlesInContractFormSet(queryset=ContractArticle.objects.filter(contract=
+                                                                                               self.get_contract()))
         return ctx
-
-    def get_initial(self):
-        self.initial.update({'contract_id': self.kwargs.get('contract_id')})
-        return super().get_initial()
-
-    def post(self, request, *args, **kwargs):
-        formset = EditArticlesToContractFormSet(request.POST)
-        if formset.is_valid():
-            return self.form_valid(formset)
-
-    def form_valid(self, formset):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            # import pdb; pdb.set_trace()
-            instance.contract = Contract.objects.get(pk=self.kwargs.get('contract_id'))
-            instance.save()
-        self.success_url = reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
-        return HttpResponseRedirect(self.success_url)
 
 
 class EditContractView(UpdateView):
@@ -424,36 +445,50 @@ class EditFinancialDocView(UpdateView):
         return HttpResponseRedirect(self.object.get_absolute_url())
 
 
-class EditArticlesInFinDocView(FormView):
+class EditArticlesInFinDocView(UpdateView):
     model = FinDocumentArticle
     form_class = EditArticlesInFinDocForm
     template_name = 'budget/findoc_edit_articles.html'
     pk_url_kwarg = 'findoc_id'
-    success_url = reverse_lazy('budget:findoc_details')
+    success_url = ""
+
+    def get_object(self, queryset=None):
+        return self.get_findoc()
+
+    # def get_queryset(self):
+    #     return FinDocumentArticle.objects.filter(fin_doc=self.get_findoc())
+
+    def get_findoc(self):
+        findoc_id = self.kwargs.get('findoc_id')
+        return FinancialDocument.objects.get(pk=findoc_id)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['findoc'] = FinancialDocument.objects.get(pk=self.kwargs.get('findoc_id'))
-        ctx['formset'] = EditArticlesToFinDocFormSet(queryset=FinDocumentArticle.objects.filter(fin_doc=ctx['findoc']))
+        ctx['formset'] = EditArticlesInFinDocFormSet(queryset=FinDocumentArticle.objects.filter(fin_doc=
+                                                                                        self.get_findoc()))
         return ctx
 
-    def get_initial(self):
-        self.initial.update({'findoc_id': self.kwargs['findoc_id']})
-        return super().get_initial()
-
     def post(self, request, *args, **kwargs):
-        formset = EditArticlesToFinDocFormSet(request.POST)
+        self.object = self.get_object()
+        formset = EditArticlesInFinDocFormSet(request.POST)
         if formset.is_valid():
             return self.form_valid(formset)
+        return self.form_invalid(request, formset)
 
-    def form_valid(self, formset):
-        instances = formset.save(commit=False)
-        for instance in instances:
+    def form_valid(self, form):
+        for single_form in form:
             # import pdb; pdb.set_trace()
-            instance.fin_doc = FinancialDocument.objects.get(pk=self.kwargs.get('findoc_id'))
+            instance = single_form.save(commit=False)
+            instance.fin_doc = self.get_findoc()
             instance.save()
-        self.success_url = reverse('budget:findoc_details', kwargs={'findoc_id': self.kwargs.get('findoc_id')})
-        return HttpResponseRedirect(self.success_url)
+        return super().form_valid(form)
+
+    def form_invalid(self, request, formset):
+        return render(request, self.template_name, {"formset": formset})
+
+    def get_success_url(self):
+        return reverse('budget:findoc_details', kwargs={'findoc_id': self.kwargs.get('findoc_id')})
 
 
 class DeleteFinancialDocView(DeleteView):

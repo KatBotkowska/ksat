@@ -158,7 +158,7 @@ class ContractArticle(models.Model):
     class Meta:
         default_related_name = 'contract_articles'
         ordering = ('contract',)
-        verbose_name = 'contract articles'
+        verbose_name = 'contract_articles'
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

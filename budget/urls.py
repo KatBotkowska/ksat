@@ -19,7 +19,7 @@ urlpatterns = [
     #CONTRACT
     path('contracts/', views.ContractsView.as_view(), name='contracts'),
     path('contract/<int:contract_id>', views.ContractDetailsView.as_view(), name='contract_details'),
-    path('add_contract/', views.AddContractView.as_view(), name='add_contract'), #TODO moze dodawac umowe do konkretnego zadania: task/<int:task_id>/add_contract
+    path('add_contract/', views.AddContractView.as_view(), name='add_contract'),
     path('<int:contract_id>/add_articles_to_contract', views.AddArticlesToContractView.as_view(), name='contract_add_articles'),
     path('<int:contract_id>/edit_articles_in_contract', views.EditArticlesInContractView.as_view(), name='contract_edit_articles'),
     path('edit_contract/<int:contract_id>', views.EditContractView.as_view(), name='edit_contract'),
