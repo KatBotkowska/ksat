@@ -1,7 +1,7 @@
 from django import forms
 from django.db.models import Sum
 from django.forms import ModelForm, Textarea, formset_factory, BaseFormSet
-from django.forms.models import modelformset_factory
+from django.forms.models import modelformset_factory, BaseModelFormSet
 from .models import Articles, Task, Contract, Contractor, FinancialDocument, TaskArticles, ContractArticle, \
     FinDocumentArticle
 
@@ -32,30 +32,41 @@ AddArticlesToTaskFormSet = modelformset_factory(TaskArticles, fields=('article',
 
 
 class EditArticlesInTaskForm(ModelForm):
+    # def __init__(self, *args, **kwargs):
+    #     # super().__init__(*args, **kwargs)
+    #     self.fields['article'].queryset = TaskArticles.objects.all()
+    #     task = self.initial.get('task')
+    #     if task is not None:
+    #         self.fields['article'].queryset = TaskArticles.objects.filter(task=task)
+
+    def clean(self):
+        super().clean()
+        data=self.cleaned_data
+        article = self.cleaned_data.get('article')
+        value = self.cleaned_data.get('value')
+        if article is not None:
+            #nowy plan na paragrafie< zaangażowanie na paragr
+            article_engagement = ContractArticle.objects.filter(contract_article=article,
+                contract__in=Contract.objects.filter(task=self.instance.task)).aggregate(total=Sum('value'))['total']
+            #print('zaangażowanie', article, article_engagement, 'nowa wartosc', value)
+            if article_engagement == None:
+                article_engagement = 0
+            #article_engagement = article_engagement
+            if value < article_engagement:
+                print('uwaga', article_engagement, value, article)
+                raise forms.ValidationError(f'na paragrafie jest zaangazowanie {article_engagement} wieksze niz nowy plan')
+            return self.cleaned_data
+
     class Meta:
         model = TaskArticles
         fields = ('article', 'value')
-    # def clean(self):
-    #     if any(self.errors):
-    #         return
-    #     for form in self.forms:
-    #         if self.can_delete and self._should_delete_form(form):
-    #             continue
-    #         article = form.cleaned_data.get('article')
-    #         value = form.cleaned_data.get('value')
-    #         if article is not None:
-    #             #nowy plan na paragrafie< zaangażowanie na paragr
-    #             article_engagement = ContractArticle.objects.filter(contract_article=article,
-    #                                     contract__in=Contract.objects.filter(task=self.task)).aggregate(total=Sum('value'))['total']
-    #             print(article, article_engagement)
-    #         if article_engagement == None:
-    #             article_engagement = 0
-    #             #article_engagement = article_engagement
-    #         if value < article_engagement:
-    #             raise forms.ValidationError(f'na paragrafie jest zaangazowanie {article_engagement} wieksze niz nowy plan')
-    # #             #return self.cleaned_data
+
 #TODO walidacja do zrobienia
-# class BaseEditArticleToTaskFormSet(BaseFormSet):
+# class BaseEditArticleToTaskFormSet(BaseModelFormSet):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields['article'].queryset = TaskArticles.objects.filter(task=Task.objects.filter(id=self.initial['task_id']))
+#
 #     def clean(self):
 #         if any(self.errors):
 #             return
@@ -75,11 +86,12 @@ class EditArticlesInTaskForm(ModelForm):
 #                 if value < article_engagement:
 #                     raise forms.ValidationError(f'na paragrafie jest zaangazowanie {article_engagement} wieksze niz nowy plan')
 #             #return self.cleaned_data
+
 #
-#
-# # EditArticlesToTaskFormSet = formset_factory(EditArticlesInTaskForm, formset=BaseEditArticleToTaskFormSet,
-# #                                             extra=4)
-EditArticlesToTaskFormSet = modelformset_factory(TaskArticles, fields=('article', 'value'), extra=4)
+# EditArticlesToTaskFormSet = formset_factory(EditArticlesInTaskForm, formset=BaseEditArticleToTaskFormSet,
+#                                      extra=4)
+EditArticlesInTaskFormSet = modelformset_factory(TaskArticles, fields=('article', 'value'),
+                                extra=4, form=EditArticlesInTaskForm)
 
 
 class EditTaskForm(ModelForm):

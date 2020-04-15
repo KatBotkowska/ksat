@@ -1,4 +1,4 @@
-from django.forms import formset_factory
+from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy, reverse
@@ -6,7 +6,7 @@ from django.views.generic import ListView, CreateView, DetailView, DeleteView, U
 from django.views.generic.base import View, TemplateView
 
 from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet, EditArticlesInTaskForm, \
-    EditArticlesToTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
+    EditArticlesInTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
     EditContractForm, EditArticlesInContractForm, EditArticlesToContractFormSet, AddFinancialDocForm, \
     AddArticlesToFinDocForm, AddArticlesToFinDocFormSet, EditFinDocForm, EditArticlesInFinDocForm, \
     EditArticlesToFinDocFormSet
@@ -62,10 +62,10 @@ class AddArticlesToTaskView(FormView):
         return Task.objects.get(id=task_id)
 
     def get_form_class(self):
-        return formset_factory(AddArticlesToTaskForm, extra = 6)
+        return formset_factory(AddArticlesToTaskForm, extra=6)
 
     def get_success_url(self):
-        return reverse('budget:task_details', kwargs= {'task_id': self.kwargs.get('task_id')})
+        return reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
 
     def form_valid(self, form):
         for single_form in form:
@@ -87,30 +87,37 @@ class EditArticlesInTaskView(UpdateView):
     pk_url_kwarg = 'task_id'
     success_url = ''
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx['task'] = Task.objects.get(pk=self.kwargs.get('task_id'))
-        #ctx['formset'] = EditArticlesToTaskFormSet()
-        ctx['formset'] = EditArticlesToTaskFormSet(queryset=TaskArticles.objects.filter(task=ctx['task']))
-        return ctx
+    def get_task(self):
+        task_id = self.kwargs.get('task_id')
+        return Task.objects.get(id=task_id)
 
-    def get_initial(self):
-        self.initial.update({'task_id': self.kwargs['task_id']})
-        return super().get_initial()
+    def get_success_url(self):
+        return reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
 
     def post(self, request, *args, **kwargs):
-        formset = EditArticlesToTaskFormSet(request.POST)
+        self.object = self.get_object()
+        formset = EditArticlesInTaskFormSet(request.POST)
         if formset.is_valid():
             return self.form_valid(formset)
+        return self.form_invalid(request, formset)
+        #return HttpResponse(formset)
 
-    def form_valid(self, formset):
-        instances = formset.save(commit=False)
-        for instance in instances:
-            # import pdb; pdb.set_trace()
-            instance.task = Task.objects.get(pk=self.kwargs.get('task_id'))
+    def form_invalid(self, request, formset):
+        return render(request, self.template_name, {"formset":formset})
+
+    def form_valid(self, form):
+        for single_form in form:
+            instance = single_form.save(commit=False)
+            instance.task = self.get_task()
             instance.save()
-        self.success_url = reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
-        return HttpResponseRedirect(self.success_url)
+        return super().form_valid(form)
+
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['task'] = self.get_task()
+        ctx['formset'] =EditArticlesInTaskFormSet(queryset=TaskArticles.objects.filter(task=self.get_task()))
+        return ctx
 
 
 class EditTaskView(UpdateView):
@@ -166,12 +173,11 @@ class AddContractView(FormView):
     def get_initial(self):
         if 'task_id' in self.request.COOKIES:
             initial = super().get_initial()
-            initial['task_id'] =  int(self.request.COOKIES.get('task_id'))
+            initial['task_id'] = int(self.request.COOKIES.get('task_id'))
             return initial
 
 
 class AddArticlesToContractView(FormView):
-
     template_name = 'budget/add_articles_to_contract.html'
     pk_url_kwarg = 'contract_id'
     success_url = ""
@@ -181,8 +187,8 @@ class AddArticlesToContractView(FormView):
         return Contract.objects.get(id=contract_id)
 
     def get_form_class(self):
-        #contract = self.get_contract()
-        #amount = contract.task.article.all().count()
+        # contract = self.get_contract()
+        # amount = contract.task.article.all().count()
         return formset_factory(AddArticlesToContractForm, extra=0)
 
     def get_success_url(self):
@@ -198,7 +204,7 @@ class AddArticlesToContractView(FormView):
     def get_initial(self):
         contract = self.get_contract()
         amount = contract.task.article.all().count()
-        return amount*[{'contract': contract}]
+        return amount * [{'contract': contract}]
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -232,7 +238,7 @@ class EditArticlesInContractView(FormView):
     def form_valid(self, formset):
         instances = formset.save(commit=False)
         for instance in instances:
-            #import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             instance.contract = Contract.objects.get(pk=self.kwargs.get('contract_id'))
             instance.save()
         self.success_url = reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
@@ -363,9 +369,8 @@ class AddFinancialDocView(FormView):
     def get_initial(self):
         if 'contract' in self.request.COOKIES:
             initial = super().get_initial()
-            initial['contract_id'] =  int(self.request.COOKIES.get('contract'))
+            initial['contract_id'] = int(self.request.COOKIES.get('contract'))
             return initial
-
 
     def form_valid(self, form):
         findoc = form.save(commit=False)
@@ -376,8 +381,8 @@ class AddFinancialDocView(FormView):
 
 
 class AddArticlesToFinDocView(FormView):
-    #model = FinDocumentArticle
-    #form_class = AddArticlesToFinDocForm
+    # model = FinDocumentArticle
+    # form_class = AddArticlesToFinDocForm
     template_name = 'budget/add_articles_to_findoc.html'
     pk_url_kwarg = 'findoc_id'
     success_url = ''
