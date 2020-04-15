@@ -99,11 +99,11 @@ class EditArticlesInTaskView(UpdateView):
         formset = EditArticlesInTaskFormSet(request.POST)
         if formset.is_valid():
             return self.form_valid(formset)
-        return self.form_invalid(formset)
+        return self.form_invalid(request, formset)
         #return HttpResponse(formset)
 
-    # def form_invalid(self, formset):
-    #     return self.render_to_response(self.get_context_data(formset=formset))
+    def form_invalid(self, request, formset):
+        return render(request, self.template_name, {"formset":formset})
 
     def form_valid(self, form):
         for single_form in form:
