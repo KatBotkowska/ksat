@@ -100,10 +100,9 @@ class EditArticlesInTaskView(UpdateView):
         if formset.is_valid():
             return self.form_valid(formset)
         return self.form_invalid(request, formset)
-        #return HttpResponse(formset)
 
     def form_invalid(self, request, formset):
-        return render(request, self.template_name, {"formset":formset})
+        return render(request, self.template_name, {"formset": formset})
 
     def form_valid(self, form):
         for single_form in form:
@@ -112,11 +111,10 @@ class EditArticlesInTaskView(UpdateView):
             instance.save()
         return super().form_valid(form)
 
-
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['task'] = self.get_task()
-        ctx['formset'] =EditArticlesInTaskFormSet(queryset=TaskArticles.objects.filter(task=self.get_task()))
+        ctx['formset'] = EditArticlesInTaskFormSet(queryset=TaskArticles.objects.filter(task=self.get_task()))
         return ctx
 
 
@@ -187,8 +185,6 @@ class AddArticlesToContractView(FormView):
         return Contract.objects.get(id=contract_id)
 
     def get_form_class(self):
-        # contract = self.get_contract()
-        # amount = contract.task.article.all().count()
         return formset_factory(AddArticlesToContractForm, extra=0)
 
     def get_success_url(self):
