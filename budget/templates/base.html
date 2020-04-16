@@ -25,13 +25,22 @@
         <li> Financial Documents - go by conract details</li>
     </ul></div>
 
-        <div> You can add:
+        <div>
         <ul>
-        <li><a href="{% url 'budget:add_task' %}">task</a></li>
-        <li><a href="{% url 'budget:add_contract' %}">contract</a> </li>
-        <li><a href="{% url 'budget:add_contractor' %}">contractor</a></li>
-        <li><a href="{% url 'budget:add_findoc' %}">financial document</a></li>
+
+        {% if perms.budget.add_task %}<li><a href="{% url 'budget:add_task' %}">task</a></li>{% endif %}
+        {% if perms.budget.add_contract %}<li><a href="{% url 'budget:add_contract' %}">contract</a></li>{% endif %}
+        {% if perms.budget.add_contractor %}<li><a href="{% url 'budget:add_contractor' %}">contractor</a></li>{% endif %}
+        {% if perms.budget.add_financialdocument %}<li><a href="{% url 'budget:add_findoc' %}">financial document</a></li>{% endif %}
     </ul></div>
+    <div>
+        {% if request.user.is_authenticated %}
+        Witaj, {{ request.user.username }}
+        <a href="{% url 'budget:logout' %}">LogOut</a>
+        {% else %}
+        <a href="{%  url 'budget:login' %}">LogIn</a>
+    {% endif %}
+    </div>
 
 {% endblock %}
 

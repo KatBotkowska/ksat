@@ -1,9 +1,12 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db.models import Sum
 from django.forms import ModelForm, Textarea, formset_factory, BaseFormSet
 from django.forms.models import modelformset_factory, BaseModelFormSet
 from .models import Articles, Task, Contract, Contractor, FinancialDocument, TaskArticles, ContractArticle, \
-    FinDocumentArticle
+    FinDocumentArticle, User
 
 
 # Forms for Task
@@ -336,3 +339,40 @@ class EditArticlesInFinDocForm(ModelForm):
 
 EditArticlesInFinDocFormSet = modelformset_factory(FinDocumentArticle, fields=('article', 'value'),
                                                    extra=0, form=EditArticlesInFinDocForm)
+
+
+#class for Users
+class UserForm(UserCreationForm):
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput)
+    email = forms.EmailField(required=True)
+    phone_number=forms.SlugField()
+    name = forms.CharField(max_length=128)
+    last_name = forms.CharField(max_length=128)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2', 'name', 'last_name', 'phone_number']
+
+    def save(self, commit=True):
+        user = super(UserCreationForm, self).save(commit=False)
+        user.email = self.cleaned_data["email"]
+        user.phone_number = self.cleaned_data['phone_number']
+        user.name = self.cleaned_data["name"]
+        user.last_name = self.cleaned_data["last_name"]
+        if commit:
+            user.save()
+        return user
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        try:
+            User.objects.get(username__iexact=username)
+        except User.DoesNotExist:
+            return username
+        raise ValidationError('Username already exists')
+    # def clean_email(self):
+    #     cd = super().clean()
+    #     email = cd.get('email')
+    #     validate =validate_email()
+    #     if validate(email) == False:
+    #         raise ValidationError('niepoprawny adres email')

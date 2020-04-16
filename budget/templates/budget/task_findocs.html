@@ -39,5 +39,7 @@
             </tbody>
         </table>
     {% endif %}
-    <h3><a href="{% url 'budget:add_findoc' %}">Add new financial document for task {{ task.number }}</a></h3>
+    {% if perms.budget.budget.add_financialdocument %}<h3>
+    <a href="{% url 'budget:add_findoc' %}">Add new financial document for task {{ task.number }}</a>
+</h3>{% endif %}
 {% endblock %}

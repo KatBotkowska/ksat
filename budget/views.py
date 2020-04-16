@@ -1,6 +1,9 @@
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
 from django.forms import formset_factory, modelformset_factory
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView, FormView
 from django.views.generic.base import View, TemplateView
@@ -9,7 +12,7 @@ from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet,
     EditArticlesInTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
     EditContractForm, EditArticlesInContractForm, EditArticlesInContractFormSet, AddFinancialDocForm, \
     AddArticlesToFinDocForm, AddArticlesToFinDocFormSet, EditFinDocForm, EditArticlesInFinDocForm, \
-    EditArticlesInFinDocFormSet
+    EditArticlesInFinDocFormSet, UserForm
 
 from .models import Articles, Task, Contractor, Contract, FinancialDocument, \
     TaskArticles, ContractArticle, FinDocumentArticle
@@ -40,7 +43,11 @@ class TaskDetailsView(DetailView):
         return response
 
 
-class AddTaskView(FormView):
+class AddTaskView(PermissionRequiredMixin,FormView):
+    permission_required = 'budget.add_task'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to add task'
     form_class = AddTaskForm
     template_name = 'budget/add_task.html'
 
@@ -52,7 +59,11 @@ class AddTaskView(FormView):
 
 
 # add articles to task
-class AddArticlesToTaskView(FormView):
+class AddArticlesToTaskView(PermissionRequiredMixin, FormView):
+    permission_required = 'budget.add_taskarticles'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to add articles to task'
     template_name = 'budget/add_articles_to_task.html'
     pk_url_kwarg = 'task_id'
     success_url = ''
@@ -80,7 +91,11 @@ class AddArticlesToTaskView(FormView):
         return ctx
 
 
-class EditArticlesInTaskView(UpdateView):
+class EditArticlesInTaskView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'budget.change_taskarticles'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to edit articles to task'
     model = TaskArticles
     form_class = EditArticlesInTaskForm
     template_name = 'budget/task_edit_articles.html'
@@ -124,7 +139,11 @@ class EditArticlesInTaskView(UpdateView):
         return ctx
 
 
-class EditTaskView(UpdateView):
+class EditTaskView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'budget.change_task'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to edit task'
     model = Task
     form_class = EditTaskForm
     template_name = 'budget/edit_task.html'
@@ -135,7 +154,11 @@ class EditTaskView(UpdateView):
         return self.object.get_absolute_url()
 
 
-class DeleteTaskView(DeleteView):
+class DeleteTaskView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'budget.delete_task'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to delete task'
     model = Task
     template_name = 'budget/delete_task.html'
     pk_url_kwarg = 'task_id'
@@ -163,7 +186,11 @@ class ContractDetailsView(DetailView):
         return response
 
 
-class AddContractView(FormView):
+class AddContractView(PermissionRequiredMixin, FormView):
+    permission_required = 'budget.add_contract'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to add contract'
     form_class = AddContractForm
     template_name = 'budget/add_contract.html'
     success_url = reverse_lazy('budget:contract_add_articles')
@@ -181,7 +208,11 @@ class AddContractView(FormView):
             return initial
 
 
-class AddArticlesToContractView(FormView):
+class AddArticlesToContractView(PermissionRequiredMixin, FormView):
+    permission_required = 'budget.add_contractarticle'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to add articles to contract'
     template_name = 'budget/add_articles_to_contract.html'
     pk_url_kwarg = 'contract_id'
     success_url = ""
@@ -214,7 +245,11 @@ class AddArticlesToContractView(FormView):
         return ctx
 
 
-class EditArticlesInContractView(UpdateView):
+class EditArticlesInContractView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'budget.change_contractarticle'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to edit articles in contract'
     model = ContractArticle
     form_class = EditArticlesInContractForm
     template_name = 'budget/contract_edit_articles.html'
@@ -262,7 +297,11 @@ class EditArticlesInContractView(UpdateView):
         return ctx
 
 
-class EditContractView(UpdateView):
+class EditContractView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'budget.change_contract'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to edit contract'
     model = Contract
     form_class = EditContractForm
     template_name = 'budget/edit_contract.html'
@@ -281,27 +320,37 @@ class DeleteContractView(DeleteView):
 
 # VIEWS FOR CONTRACTOR
 
-class ContractorView(ListView):
+class ContractorView(LoginRequiredMixin, ListView):
+    login_url = reverse_lazy('budget:login')
     model = Contractor
     template_name = 'budget/contractors.html'
     context_object_name = 'contractors'
 
 
-class ContractorDetailsView(DetailView):
+class ContractorDetailsView(LoginRequiredMixin, DetailView):
+    login_url = reverse_lazy('budget:login')
     model = Contractor
     template_name = 'budget/contractor.html'
     context_object_name = 'contractor'
     pk_url_kwarg = 'contractor_id'
 
 
-class AddContractorView(CreateView):
+class AddContractorView(PermissionRequiredMixin, CreateView):
+    permission_required = 'budget.add_contractor'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to add contractor'
     model = Contractor
     fields = '__all__'
     template_name = 'budget/add_contractor.html'
     success_url = reverse_lazy('budget:contractors')
 
 
-class EditContractorView(UpdateView):
+class EditContractorView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'budget.change_contractor'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to edit contractor'
     model = Contractor
     fields = '__all__'
     pk_url_kwarg = 'contractor_id'
@@ -313,7 +362,11 @@ class EditContractorView(UpdateView):
         return self.object.get_absolute_url()
 
 
-class DeleteContractorView(DeleteView):
+class DeleteContractorView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'budget.delete_contractor'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to delete contractor'
     model = Contractor
     template_name = 'budget/delete_contractor.html'
     pk_url_kwarg = 'contractor_id'
@@ -378,7 +431,11 @@ class FinancialDocDetailsView(DetailView):
     pk_url_kwarg = 'findoc_id'
 
 
-class AddFinancialDocView(FormView):
+class AddFinancialDocView(PermissionRequiredMixin, FormView):
+    permission_required = 'budget.add_financialdocument'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to add findoc'
     form_class = AddFinancialDocForm
     template_name = 'budget/add_findoc.html'
     success_url = reverse_lazy('budget:findoc_add_articles')
@@ -397,7 +454,11 @@ class AddFinancialDocView(FormView):
         return HttpResponseRedirect(self.success_url)
 
 
-class AddArticlesToFinDocView(FormView):
+class AddArticlesToFinDocView(PermissionRequiredMixin, FormView):
+    permission_required = 'budget.add_findocumentarticle'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to add articles to findoc'
     # model = FinDocumentArticle
     # form_class = AddArticlesToFinDocForm
     template_name = 'budget/add_articles_to_findoc.html'
@@ -432,7 +493,11 @@ class AddArticlesToFinDocView(FormView):
         return ctx
 
 
-class EditFinancialDocView(UpdateView):
+class EditFinancialDocView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'budget.change_financialdocument'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to edit findoc'
     model = FinancialDocument
     form_class = EditFinDocForm
     pk_url_kwarg = 'findoc_id'
@@ -445,7 +510,11 @@ class EditFinancialDocView(UpdateView):
         return HttpResponseRedirect(self.object.get_absolute_url())
 
 
-class EditArticlesInFinDocView(UpdateView):
+class EditArticlesInFinDocView(PermissionRequiredMixin, UpdateView):
+    permission_required = 'budget.change_findocumentarticle'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to edit articles in findoc'
     model = FinDocumentArticle
     form_class = EditArticlesInFinDocForm
     template_name = 'budget/findoc_edit_articles.html'
@@ -491,7 +560,11 @@ class EditArticlesInFinDocView(UpdateView):
         return reverse('budget:findoc_details', kwargs={'findoc_id': self.kwargs.get('findoc_id')})
 
 
-class DeleteFinancialDocView(DeleteView):
+class DeleteFinancialDocView(PermissionRequiredMixin, DeleteView):
+    permission_required = 'budget.delete_financialdocument'
+    raise_exception = False
+    login_url = reverse_lazy('budget:login')
+    permission_denied_message = 'You dont\'t have permission to delete findoc'
     model = FinancialDocument
     template_name = 'budget/delete_findoc.html'
     pk_url_kwarg = 'findoc_id'
@@ -499,3 +572,52 @@ class DeleteFinancialDocView(DeleteView):
     def get_success_url(self):
         findoc = FinancialDocument.objects.get(pk=self.kwargs.get('findoc_id'))
         return reverse('budget:contract-findocs', kwargs={'contract_id': findoc.contract.id})
+
+#Views for create user, login
+class UserRegistrationView(View):
+    form_class = UserForm
+    fields = '__all__'
+    template_name = "budget/registration_form.html"
+
+    def get(self, request):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user.set_password(password)
+            user.save()
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return redirect('budget:index')
+        return render(request, self.template_name, {'form': form})
+
+class LoginView(LoginView):
+    template_name = 'budget/login.html'
+
+    def get_success_url(self):
+        if 'next' in self.request.POST:
+            return self.request.POST.get('next')
+        self.success_url = reverse('budget:index')
+        return self.success_url
+
+class LogoutView(LogoutView):
+    template_name = 'budget/logout.html'
+
+
+class ResetPasswordView(PermissionRequiredMixin, PasswordChangeView):
+    raise_exception = True
+    login_url = '/budget:login/'
+    permission_required = 'budget.change_user'
+    template_name = 'budget/password_change.html'
+    success_url = reverse_lazy('budget:reset_password_done')
+    permission_denied_message = 'brak uprawnień do strony'
+
+class ResetPasswordDone(PasswordChangeDoneView):
+    template_name = 'budget/reset_password_done.html'

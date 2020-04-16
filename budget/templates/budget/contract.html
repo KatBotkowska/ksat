@@ -43,9 +43,9 @@
         </div>
     {% endif %}
 
-    <h3><a href="{% url 'budget:edit_contract' contract.id %}">Edit contract</a></h3>
-    <h3><a href="{% url 'budget:contract_edit_articles' contract.id %}">Edit articles in contract</a></h3>
-    <h3><a href="{% url 'budget:delete_contract' contract.id %}">Delete contract</a></h3>
+    {% if perms.budget.change_contract %}<h3><a href="{% url 'budget:edit_contract' contract.id %}">Edit contract</a></h3>{% endif %}
+    {% if perms.budget.change_contractarticle %}<h3><a href="{% url 'budget:contract_edit_articles' contract.id %}">Edit articles in contract</a></h3>{% endif %}
+    {% if perms.budget.delete_contract %}<h3><a href="{% url 'budget:delete_contract' contract.id %}">Delete contract</a></h3>{% endif %}
 
 
 {% endblock %}

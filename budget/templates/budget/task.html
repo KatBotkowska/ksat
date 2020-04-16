@@ -63,7 +63,8 @@
         <div>
         No contracts for task.
         </div>
-    {% endif %}<a href="{% url 'budget:add_contract' %}">You can add a new contract for that task.</a>
+    {% endif %}
+    {% if perms.budget.add_contract %}<a href="{% url 'budget:add_contract' %}">You can add a new contract for that task.</a>{% endif %}
     {% if task.performance %}
         <div>
         <h3><a href="{% url 'budget:task-findocs' task.id %}">Financial documents for task - details</a></h3>
@@ -73,9 +74,15 @@
         No financial document for task. You can add a new one in contract details.
         </div>
     {% endif %}
-    <h3><a href="{% url 'budget:edit_task' task.id %}">Edit task general info</a></h3>
-    <h3><a href="{% url 'budget:task_edit_articles' task.id %}">Edit articles in task</a></h3>
-    <h3><a href="{% url 'budget:delete_task' task.id %}">Delete task</a></h3>
+    {% if perms.budget.change_task %}<h3>
+        <a href="{% url 'budget:edit_task' task.id %}">Edit task general info</a>
+    </h3>{% endif %}
+    {% if perms.budget.budget.change_taskarticles %}<h3>
+        <a href="{% url 'budget:task_edit_articles' task.id %}">Edit articles in task</a>
+    </h3>{% endif %}
+    {% if perms.budget.budget.delete_task %}<h3>
+        <a href="{% url 'budget:delete_task' task.id %}">Delete task</a>
+    </h3>{% endif %}
 
 
 {% endblock %}

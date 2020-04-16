@@ -40,4 +40,10 @@ urlpatterns = [
     path('edit_document/<int:findoc_id>', views.EditFinancialDocView.as_view(), name='edit_doc'),
     path('<int:findoc_id>/edit_articles_in_findoc', views.EditArticlesInFinDocView.as_view(), name='findoc_edit_articles'),
     path('delete_document/<int:findoc_id>', views.DeleteFinancialDocView.as_view(), name='delete_doc'),
+    #USERS
+    path('user_register', views.UserRegistrationView.as_view(), name='user_register'),
+    path('login', views.LoginView.as_view(), name='login'),
+    path('logout', views.LogoutView.as_view(), name='logout'),
+    path('reset_password', views.ResetPasswordView.as_view(), name='reset_password'),
+    path('reset_password_done', views.ResetPasswordDone.as_view(), name='reset_password_done'),
 ]

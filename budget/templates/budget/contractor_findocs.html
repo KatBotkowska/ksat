@@ -33,7 +33,9 @@
             {% endfor %}
             </tbody>
         </table>
-    <h3><a href="{% url 'budget:add_findoc' %}">Add new financial document for {{ contractor }}</a></h3>
+    {% if perms.budget.add_financialdocument %}<h3>
+        <a href="{% url 'budget:add_findoc' %}">Add new financial document for {{ contractor }}</a>
+    </h3>{% endif %}
 
 
 {% endblock %}

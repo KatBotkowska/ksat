@@ -22,13 +22,7 @@
         <li>{{ article.article }} - {{ article.value }} PLN</li>
     {% endfor %}</ul>
     </div>
-
-
-
-
-    <h3><a href="{% url 'budget:edit_doc' findoc.id %}">Edit document</a></h3>
-    <h3><a href="{% url 'budget:findoc_edit_articles' findoc.id %}">Edit articles in document</a></h3>
-    <h3><a href="{% url 'budget:delete_doc' findoc.id %}">Delete document</a></h3>
-
-
+    {% if perms.budget.change_financialdocument %}<h3><a href="{% url 'budget:edit_doc' findoc.id %}">Edit document</a></h3>{% endif %}
+    {% if perms.budget.change_findocumentarticle %}<h3><a href="{% url 'budget:findoc_edit_articles' findoc.id %}">Edit articles in document</a></h3>{% endif %}
+    {% if perms.budget.delete_financialdocument %}<h3><a href="{% url 'budget:delete_doc' findoc.id %}">Delete document</a></h3>{% endif %}
 {% endblock %}

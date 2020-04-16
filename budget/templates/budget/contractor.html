@@ -62,8 +62,8 @@
     {% endif %}
     </div>
 
-    <h3><a href="{% url 'budget:edit_contractor' contractor.id %}">Edit contractor</a></h3>
-    <h3><a href="{% url 'budget:delete_contractor' contractor.id %}">Delete contractor</a></h3>
+    {% if perms.budget.change_contractor %}<h3><a href="{% url 'budget:edit_contractor' contractor.id %}">Edit contractor</a></h3>{% endif %}
+    {% if perms.budget.delete_contractor %}<h3><a href="{% url 'budget:delete_contractor' contractor.id %}">Delete contractor</a></h3>{% endif %}
 
 
 {% endblock %}
