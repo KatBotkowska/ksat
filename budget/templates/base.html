@@ -1,56 +1,108 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{% block title %}{% endblock title %} | KSAT</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Charmonman:400,700|Open+Sans:400,600,700&amp;subset=latin-ext"
+          rel="stylesheet">
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+          integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     {% block head %}
-        {% block style %}
-            {% comment %}
-        <link rel = 'stylesheet' href="style.css">
-        {% endcomment %}
-        {% endblock %}
     {% endblock %}
 </head>
 <body>
-{% block header %}
-    <head>
-        <meta charset="utf-8">
-    </head>
-{% endblock %}
-{% block content %}
-    <h1>Ksat - to manage project budget</h1>
-    <div>Inside the Ksat:
-    <ul>
-        <li><a href="{% url 'budget:tasks' %}"> Tasks</a></li>
-        <li><a href="{% url 'budget:contractors' %}">Contractors</a></li>
-        <li><a href="{% url 'budget:contracts' %}"> Contracts</a></li>
-        <li> Financial Documents - go by conract details</li>
-    </ul></div>
+<header class="page-header header container-fluid">
+    {% block header %}
+    {% endblock %}
+</header>
 
-        <div>
-        <ul>
-
-        {% if perms.budget.add_task %}<li><a href="{% url 'budget:add_task' %}">task</a></li>{% endif %}
-        {% if perms.budget.add_contract %}<li><a href="{% url 'budget:add_contract' %}">contract</a></li>{% endif %}
-        {% if perms.budget.add_contractor %}<li><a href="{% url 'budget:add_contractor' %}">contractor</a></li>{% endif %}
-        {% if perms.budget.add_financialdocument %}<li><a href="{% url 'budget:add_findoc' %}">financial document</a></li>{% endif %}
-    </ul></div>
-    <div>
+<nav class="navbar navbar-expand-md">
+    <a class="navbar-brand" href="{% url 'budget:index' %}">KSAT</a>
+    <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#main-navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="main-navigation">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budget:index' %}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budget:index' %}#description">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budget:index' %}#contact">Contact</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+         {% block content %}
+               <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
         {% if request.user.is_authenticated %}
-        Witaj, {{ request.user.username }}
-        <a href="{% url 'budget:logout' %}">LogOut</a>
+            <span>Logged as: {{ request.user.username }}</span>
+            <a class='nav-link' href="{% url 'budget:logout' %}"><span>LogOut</span></a>
         {% else %}
-        <a href="{%  url 'budget:login' %}">LogIn</a>
-    {% endif %}
+            <a class='nav-link' href="{% url 'budget:login' %}"><span>LogIn</span></a>
+        {% endif %}
+    </nav>
+             <div class="jumbotron">
+<div class="container features">
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <h3 class="feature-title"><a href="{% url 'budget:tasks' %}"> Tasks</a></h3>
+            {% if perms.budget.add_task %}
+                <a href="{% url 'budget:add_task' %}">Add new task</a>{% endif %}
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <h3 class="feature-title"><a href="{% url 'budget:contractors' %}">Contractors</a></h3>
+            {% if perms.budget.add_contractor %}
+            <a href="{% url 'budget:add_contractor' %}">Add new contractor</a>{% endif %}
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+            <h3 class="feature-title"><a href="{% url 'budget:contracts' %}"> Contracts</a></h3>
+            {% if perms.budget.add_contract %}
+            <a href="{% url 'budget:add_contract' %}">Add new contract</a>{% endif %}
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-12">
+
+            {% if perms.budget.add_financialdocument %}
+                <h3 class="feature-title"><a href="{% url 'budget:add_findoc' %}">Add new financial document</a></h3>{% endif %}
+        </div>
     </div>
 
-{% endblock %}
 
-{% block footer %}
-    <div>
-        <strong> Today is: {{ now }} | version: {{ version }}</strong>
+</div>
+    <div class="m-4 p-3 width-medium text-color-darker">
+
+{% endblock content %}
+
     </div>
-    <div>
-        Copyright 2020 by KateB
-    </div>
-{% endblock %}
+    <footer>
+    {% block footer %}
+        {% endblock %}
+        <div>
+            <strong> Today is: {{ now }} | version: {{ version }}</strong>
+        </div>
+        <div>
+            Copyright 2020 by KateB
+        </div>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.0.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+            crossorigin="anonymous"></script>
+
+
 </body>
 </html>

@@ -1,15 +1,40 @@
 {% extends 'base.html' %}
 {% block header %}
-    <title>Index</title>
-{% endblock %}
-{% block content %}
+    <title>KSAT</title>
+
     {{ block.super }}
-<h4>
-Program description...
-</h4>
 
+{% endblock %}
 
+{% block content %}
 
+    <div class="jumbotron">
 
+        <h1 class="display-4">Welcome to KSAT program.</h1>
 
+        <p class="lead">Simple and easy to use program to manage your project finances.
+            You can manage tasks, contracts, contractors and financial documents by adding and changing data.</p>
+        <hr class="my-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:tasks' %}" role="button">Tasks</a>
+                    <p>All tasks in your budget </p>
+                </div>
+                <div class="col-sm">
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:contractors' %}"
+                       role="button">Contractors</a>
+                    <p>Your contractors</p></div>
+                <div class="col-sm">
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:contracts' %}" role="button">Contracts</a>
+                    <p>Contracts for your tasks</p></div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block footer %}
+    <div name="contact">Contact:...</div>
+    {{ block.super }}
 {% endblock %}

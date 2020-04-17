@@ -29,8 +29,8 @@
 
     </div>
     {% if not contract.contract_performance %}
-        <div>No financial document for contract. You can add one <a href="{% url 'budget:add_findoc' %}">here</a></div>
-    {% else %}
+        <div>No financial document for contract. {% else %}</div>
+
         <div>
             <b>Financial documents for contract:</b>
             <ul>
@@ -42,6 +42,7 @@
             </h3>
         </div>
     {% endif %}
+    <div>You can add new fidoc to contract <a href="{% url 'budget:add_findoc' %}">here</a></div>
 
     {% if perms.budget.change_contract %}<h3><a href="{% url 'budget:edit_contract' contract.id %}">Edit contract</a></h3>{% endif %}
     {% if perms.budget.change_contractarticle %}<h3><a href="{% url 'budget:contract_edit_articles' contract.id %}">Edit articles in contract</a></h3>{% endif %}
