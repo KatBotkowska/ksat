@@ -5,27 +5,27 @@
 {% endblock %}
 {% block content %}
     {{ block.super }}
-    <h2>Contract: {{ contract.number }}</h2>
-    <h4>Contractor: {{ contract.contractor }}</h4>
-    <h4>Task: {{ contract.task.title }}</h4>
-    <h4>Contract value: {{ contract.contract_value }}</h4>
-    <h4>Contract peformance: {{ contract.contract_performance }}</h4>
+    <h2>Contract: <a href="{% url 'budget:contract_details' contract.id %}">{{ contract.number }}</a></h2>
+    <h4>Contractor: <a href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a></h4>
+    <h4>Task: <a href="{% url 'budget:task_details' contract.task.id %}">{{ contract.task.title }}</a> </h4>
+    <h4>Contract value: {{ contract.contract_value }} PLN</h4>
+    <h4>Contract peformance: {{ contract.contract_performance }} PLN</h4>
     {% if not contract.contract_performance %}
         No financial document for this contract yet.
     {% else %}
-        <table border="bold">
+        <table class="table table-bordered">
             <thead>
             <tr>
-                <td>Id</td>
-                <td>Number</td>
-                <td>Date</td>
-                <td>Value</td>
-                <td>Payment Date -1</td>
-                <td>Payment Date -2</td>
+                <th scope="col">Id</th>
+                <th scope="col">Number</th>
+                <th scope="col">Date</th>
+                <th scope="col">Value</th>
+                <th scope="col">Payment Date -1</th>
+                <th scope="col">Payment Date -2</th>
                 {% for article in contract.article.all %}
-                    <td>{{ article.total_number }}</td>
+                    <th scope="col">{{ article.total_number }}</th>
                 {% endfor %}
-            <td>Sum</td>
+            <th scope="col">Sum</th>
             </tr>
             </thead>
             <tbody>

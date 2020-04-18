@@ -17,7 +17,7 @@
     <div>
         <b>Contracts:</b>
     {% if not contractor.contracts.all %}
-        no contracts yet.
+        <p>No contracts yet.</p>
     {% else %}
         {% for contract in contractor.contracts.all %}
             <ul>
@@ -27,7 +27,7 @@
     </div>
     <div>
         <b>Financial documents for contractor:</b>
-    {% if not contractor.fds.all %} No documents yet.
+    {% if not contractor.fds.all %}<p>No documents yet.</p>
     {% else %}
         <table border="bold">
             <thead>
@@ -61,9 +61,17 @@
      <h3><a href="{% url 'budget:contractor-findocs' contractor.id %}">Financial documents for contractor - details</a></h3>
     {% endif %}
     </div>
-
-    {% if perms.budget.change_contractor %}<h3><a href="{% url 'budget:edit_contractor' contractor.id %}">Edit contractor</a></h3>{% endif %}
-    {% if perms.budget.delete_contractor %}<h3><a href="{% url 'budget:delete_contractor' contractor.id %}">Delete contractor</a></h3>{% endif %}
-
+    <div container>
+        <div class="row">
+            <div class="col-sm">
+    {% if perms.budget.change_contractor %}
+        <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_contractor' contractor.id %}" role="button">
+            Edit contractor</a></div>{% endif %}
+         <div class="col-sm">
+    {% if perms.budget.delete_contractor %}
+        <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_contractor' contractor.id %}" role="button">
+            Delete contractor</a></div>{% endif %}
+        </div>
+    </div>
 
 {% endblock %}

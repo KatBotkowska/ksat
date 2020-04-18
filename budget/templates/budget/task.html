@@ -22,7 +22,7 @@
 
             <ul> {% if article.value != 0 %}
                 <li>{{ article.article.total_number }}, value: {{ article.value }} PLN ,
-                    engagement: {% task_article_engagement article.article task  %} PLN,
+                    engagement: {% task_article_engagement article.article task %} PLN,
                     performance: {% task_article_performance article.article task %} PLN
                 </li>{% endif %}
             </ul>
@@ -31,58 +31,72 @@
 
     </div>
     {% if task.engagement %}
-    <div>
-        <b>Contracts:</b>
-        <table border="bold">
-            <thead>
-            <tr>
-                <td>Id</td>
-                <td>Number</td>
-                <td>Contractor</td>
-                <td>Date</td>
-                <td>Value</td>
-                <td>Performance</td>
-            </tr>
-            </thead>
-            <tbody>
-            {% for contract in task.contracts.all %}
+        <div>
+            <b>Contracts:</b>
+            <table class="table table-bordered">
+                <thead>
                 <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td><a href="{{ contract.get_absolute_url }}">{{ contract.number }}</a></td>
-                    <td>{{ contract.contractor }}</td>
-                    <td>{{ contract.date }}</td>
-                    <td>{{ contract.contract_value|floatformat:2 }} </td>
-                    <td>{{ contract.contract_performance|floatformat:2 }}</td>
+                    <th scope="col">Id</th>
+                    <th scope="col">Number</th>
+                    <th scope="col">Contractor</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Performance</th>
                 </tr>
-            {% empty %} No contracts for task
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for contract in task.contracts.all %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td><a href="{{ contract.get_absolute_url }}">{{ contract.number }}</a></td>
+                        <td>{{ contract.contractor }}</td>
+                        <td>{{ contract.date }}</td>
+                        <td>{{ contract.contract_value|floatformat:2 }} </td>
+                        <td>{{ contract.contract_performance|floatformat:2 }}</td>
+                    </tr>
+                {% empty %} No contracts for task
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
         <div>
-        No contracts for task.
+            No contracts for task.
         </div>
     {% endif %}
-    {% if perms.budget.add_contract %}<a href="{% url 'budget:add_contract' %}">You can add a new contract for that task.</a>{% endif %}
+    {% if perms.budget.add_contract %}
+        <a href="{% url 'budget:add_contract' %}">You can add a new contract for that task.</a>{% endif %}
     {% if task.performance %}
         <div>
-        <h3><a href="{% url 'budget:task-findocs' task.id %}">Financial documents for task - details</a></h3>
+            <h3><a href="{% url 'budget:task-findocs' task.id %}">Financial documents for task - details</a></h3>
         </div>
     {% else %}
         <div>
-        No financial document for task. You can add a new one in contract details.
+            No financial document for task. You can add a new one in contract details.
         </div>
     {% endif %}
-    {% if perms.budget.change_task %}<h3>
-        <a href="{% url 'budget:edit_task' task.id %}">Edit task general info</a>
-    </h3>{% endif %}
-    {% if perms.budget.budget.change_taskarticles %}<h3>
-        <a href="{% url 'budget:task_edit_articles' task.id %}">Edit articles in task</a>
-    </h3>{% endif %}
-    {% if perms.budget.budget.delete_task %}<h3>
-        <a href="{% url 'budget:delete_task' task.id %}">Delete task</a>
-    </h3>{% endif %}
+    <div container>
+        <div class="row">
+            <div class="col-sm">
+                {% if perms.budget.change_task %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_task' task.id %}" role="button">
+                        Edit task general info</a></div>
+                {% endif %}
 
+            <div class="col-sm">
+                {% if perms.budget.change_taskarticles %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:task_edit_articles' task.id %}"
+                       role="button">
+                        Edit articles in task</a></div>
+                {% endif %}
+
+            <div class="col-sm">
+                {% if perms.budget.delete_task %}
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_task' task.id %}"
+                       role="button">
+                        Delete task</a></div>
+                {% endif %}
+        </div>
+    </div>
 
 {% endblock %}

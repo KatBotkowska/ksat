@@ -5,22 +5,22 @@
 {% block content %}
     {{ block.super }}
     <h2>Task: {{ task.title }}</h2>
-    <h3>Task value: {{ task.task_value }}</h3>
-    <h3>Task peformance: {{ task.performance }}</h3>
+    <h3>Task value: {{ task.task_value }} PLN</h3>
+    <h3>Task peformance: {{ task.performance }} PLN</h3>
     {%  if not task.performance %}
     No financial document for this task yet.
     {% else %}
-        <table border="bold">
+        <table class="table table-bordered">
             <thead>
             <tr>
-                <td>Id</td>
-                <td>Number</td>
-                <td>Date</td>
-                <td>Contract</td>
-                <td>Contractor</td>
-                <td>Value</td>
-                <td>Payement Date -1</td>
-                <td>Payement Date -2</td>
+                <th scope="col">Id</th>
+                <th scope="col">Number</th>
+                <th scope="col">Date</th>
+                <th scope="col">Contract</th>
+                <th scope="col">Contractor</th>
+                <th scope="col">Value</th>
+                <th scope="col">Payement Date -1</th>
+                <th scope="col">Payement Date -2</th>
             </tr>
             </thead>
             <tbody>

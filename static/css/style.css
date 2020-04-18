@@ -1,15 +1,15 @@
 body {
   padding: 0;
   margin: 0;
-  background: #81bf11;
+  background: lightsteelblue;
 }
 /*--- navigation bar ---*/
 .navbar {
-  background: #acce4e;
+  background: lightsteelblue;
 }
 .nav-link,
 .navbar-brand {
-  color: #fff;
+  color: #666666;
   cursor: pointer;
 }
 .nav-link {
@@ -21,18 +21,17 @@ body {
 .navbar-collapse {
   justify-content: flex-end;
 }
-.description {
-  left: 50%;
-  position: absolute;
-  top: 45%;
-  transform: translate(-50%, -55%);
-  text-align: center;
+
+.btn.btn-primary {
+  color: #666666;
+  background: lightsteelblue;
 }
-.description h1 {
-  color: #4B0082;
+.page-footer {
+  background-color: lightsteelblue;
+  color: #666666;
+  padding: 60px 0 30px;
 }
-.description p {
-  color: #800080;
-  font-size: 1.3rem;
-  line-height: 1.5;
+.footer-copyright {
+  color: #666;
+  padding: 40px 0;
 }
