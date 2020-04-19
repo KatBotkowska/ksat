@@ -21,7 +21,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '^wzqn=gtt-405!^6)bu=_0inr^18gau95=7n-%iqmxg5=4jjy2'
+SECRET_KEY =config('SECRET_KEY')
+    #'^wzqn=gtt-405!^6)bu=_0inr^18gau95=7n-%iqmxg5=4jjy2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -67,6 +68,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'budget.my_context_processor.cp',
+                'budget.my_context_processor.recaptcha_site_key',
             ],
         },
     },
@@ -126,7 +128,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (
   os.path.join(BASE_DIR, 'static'),
 )
+
+GOOGLE_RECAPTCHA_SECRET_KEY =config('SECRET_RECAPTCHA')
+RECAPTCHA_SITE_KEY = config('SECRET_RACAPTCHA_SITE_KEY')
+RECAPTCHA_USE_SSL = True

@@ -1,3 +1,8 @@
+import json
+import urllib
+
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView
@@ -7,6 +12,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView, FormView
 from django.views.generic.base import View, TemplateView
+from ipware import get_client_ip
 
 from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet, EditArticlesInTaskForm, \
     EditArticlesInTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
@@ -598,6 +604,10 @@ class UserRegistrationView(View):
                     return redirect('budget:index')
         return render(request, self.template_name, {'form': form})
 
+def _validate_recaptcha(token, ip):
+    pass
+
+
 class LoginView(LoginView):
     template_name = 'budget/login.html'
 
@@ -607,14 +617,25 @@ class LoginView(LoginView):
         self.success_url = reverse('budget:index')
         return self.success_url
 
+
+    def get_form_valid(self, form):
+        request_body = self.request.POST
+        if not request_body:
+            return None
+
+        recaptcha_token = request_body['g-recaptcha-response']
+        ip_addr, _ = get_client_ip(self.request)
+        if not _validate_recaptcha(recaptcha_token, ip_addr):
+            return redirect('budget:login')
+        return super().form_valid(form)
+
+
 class LogoutView(LogoutView):
     template_name = 'budget/logout.html'
 
 
-class ResetPasswordView(PermissionRequiredMixin, PasswordChangeView):
-    raise_exception = True
+class ResetPasswordView(LoginRequiredMixin, PasswordChangeView):
     login_url = '/budget:login/'
-    permission_required = 'budget.change_user'
     template_name = 'budget/password_change.html'
     success_url = reverse_lazy('budget:reset_password_done')
     permission_denied_message = 'brak uprawnień do strony'

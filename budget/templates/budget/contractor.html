@@ -29,17 +29,17 @@
         <b>Financial documents for contractor:</b>
     {% if not contractor.fds.all %}<p>No documents yet.</p>
     {% else %}
-        <table border="bold">
+        <table class="table table-bordered">
             <thead>
             <tr>
-                <td>Id</td>
-                <td>Contract</td>
-                <td>Task</td>
-                <td>Number</td>
-                <td>Date</td>
-                <td>Value</td>
-                <td>Payment date (first)</td>
-                <td>Payment date (second</td>
+                <th scope="col">Id</th>
+                <th scope="col">Contract</th>
+                <th scope="col">Task</th>
+                <th scope="col">Number</th>
+                <th scope="col">Date</th>
+                <th scope="col">Value</th>
+                <th scope="col">Payment date (first)</th>
+                <th scope="col">Payment date (second)</th>
                 </tr>
             </thead>
             <tbody>

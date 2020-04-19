@@ -4,12 +4,12 @@
 {% endblock %}
 {% block content %}
     {{ block.super }}
-    <h3>Confirm delete contract: {{ contract.number }}</h3>
+
     <form action="" method="post">
         {% csrf_token %}
         <p>Are you sure you want to delete contract: {{ contract.number }}</p>
-        <div><input type="submit" value="Delete"></div>
+        <div><button type="submit" class="btn btn-primary">Delete</button></div>
     </form>
-    <a href="{% url 'budget:contract_details' contract.id %}"><button type="submit">No, just kidding!</button></a>
+    <a href="{% url 'budget:contract_details' contract.id %}"><div><button type="submit" class="btn btn-primary">No</button></div></a>
 
 {% endblock %}

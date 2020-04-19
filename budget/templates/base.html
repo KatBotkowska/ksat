@@ -43,14 +43,29 @@
     </div>
 </nav>
 {% block content %}
-    <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-        {% if request.user.is_authenticated %}
-            <span>Logged as: {{ request.user.username }}</span>
-            <a class='nav-link' href="{% url 'budget:logout' %}"><span>LogOut</span></a>
-        {% else %}
-            <a class='nav-link' href="{% url 'budget:login' %}"><span>LogIn</span></a>
-        {% endif %}
-    </nav>
+    <nav class="navbar navbar-expand-md">
+    {% if request.user.is_authenticated %}
+<p class="text-uppercase font-weigth-normal">Logged as: {{ request.user.username }}</p>
+
+        <button class="navbar-toggler navbar-dark" type="button" data-toggle="collapse" data-target="#main-navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="main-navigation">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budget:logout' %}">Log out</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budget:reset_password' %}">Reset password</a>
+            </li>
+            {% else %}
+
+            <p class="nav-item">
+                <a class="nav-link" href="{% url 'budget:login' %}">Log in</a>
+            </p>
+        </ul>
+    </div>{% endif %}
+</nav>
     <div class="jumbotron">
     <div class="container features">
         <div class="row">
@@ -76,10 +91,7 @@
                     </h3>{% endif %}
             </div>
         </div>
-
-
     </div>
-
 
 {% endblock content %}
 

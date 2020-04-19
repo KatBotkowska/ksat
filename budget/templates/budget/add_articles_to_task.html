@@ -13,9 +13,9 @@
         {% for single_form in form %}
         {{ single_form.as_p }}
     {% endfor %}
-        <div><input type="submit" value="Add"></div>
+        <div><button type="submit" class="btn btn-primary">Add</button></div>
     </form>
 
-  <a href="{% url 'budget:task_details' task.id %}"><input type="submit" value="Back"></a>
+
 
 {% endblock %}

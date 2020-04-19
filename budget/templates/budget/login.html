@@ -1,14 +1,24 @@
 {% extends 'base.html' %}
+{% block head %}
+    {{ block.super }}
+
+{% endblock %}
 {% block content %}
 
     {{ block.super }}
-    <form action="" method="post">
+    <form action="" method="post" id="theForm">
     {% csrf_token %}
         {{ form.as_p }}
         {% if request.GET.next %}
         <input type="hidden" name="next" value="{{ request.GET.next }}">
         {% endif %}
-    <div><input type="submit" value="Log In"></div>
-    </form>
 
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+<div class="g-recaptcha" data-sitekey="6LcK4-oUAAAAAHaOezhMtWhq-xE-CmcEyC60y7Kw"></div>
+        <button type="submit" class="btn btn-primary">Login</button>
+
+    </form>
+{% block scripts %}
+
+{% endblock %}
 {% endblock %}

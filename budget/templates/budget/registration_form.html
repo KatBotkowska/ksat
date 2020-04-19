@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
-{% block content %}
-<h1>REGISTRATION - CREATE A NEW ACCOUNT</h1>
+{% block head %}
     {{ block.super }}
+{% endblock %}
+{% block header %}
+   {{ block.super }}
+{% endblock %}
+{% block content %}{{ block.super }}
+<p class="font weigth bolder upper case">REGISTRATION FOR KSAT- CREATE A NEW ACCOUNT</p>
     <form action="" method="post">
     {% csrf_token %}
         {{ form.as_p }}
-    <div><input type="submit" value="Dodaj uzytkownika"></div>
+    <div><input type="submit" value="Add user"></div>
     </form>
 {% endblock %}

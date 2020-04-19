@@ -4,12 +4,17 @@
 {% endblock %}
 {% block content %}
     {{ block.super }}
-    <h3>Confirm delete document: {{ financialdocument.number }}</h3>
     <form action="" method="post">
         {% csrf_token %}
         <p>Are you sure you want to delete document: {{ financialdocument.number }}</p>
-        <div><input type="submit" value="Delete"></div>
+        <div>
+            <button type="submit" class="btn btn-primary">Delete</button>
+        </div>
     </form>
-    <a href="{% url 'budget:findoc_details' financialdocument.id %}"><button type="submit">No, just kidding!</button></a>
+    <a href="{% url 'budget:findoc_details' financialdocument.id %}">
+        <div>
+            <button type="submit" class="btn btn-primary">No</button>
+        </div>
+    </a>
 
 {% endblock %}
