@@ -46,8 +46,8 @@
             {% for fd in contractor.fds.all %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ fd.contract.number }}</td>
-                    <td>{{ fd.contract.task.title }}</td>
+                    <td><a href="{% url 'budget:contract_details' fd.contract.id %}">{{ fd.contract.number }}</a></td>
+                    <td><a href="{% url 'budget:task_details' fd.contract.task.slug %}">{{ fd.contract.task.title }}</a></td>
                     <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
                     <td>{{ fd.date }}</td>
                     <td>{{ fd.fin_doc_value }}</td>
