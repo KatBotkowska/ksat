@@ -10,12 +10,12 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='budget/index.html'), name = 'index'),
     #TASK
     path('tasks/', views.TasksView.as_view(), name='tasks'),
-    path('task/<int:task_id>', views.TaskDetailsView.as_view(), name='task_details'),
+    path('task/<slug:task_slug>', views.TaskDetailsView.as_view(), name='task_details'),
     path('task_add/', views.AddTaskView.as_view(), name='add_task'),
-    path('<int:task_id>/add_articles_to_task', views.AddArticlesToTaskView.as_view(), name='task_add_articles'),
-    path('<int:task_id>/edit_articles_in_task', views.EditArticlesInTaskView.as_view(), name='task_edit_articles'),
-    path('edit_task/<int:task_id>', views.EditTaskView.as_view(), name='edit_task'),
-    path('delete_task/<int:task_id>', views.DeleteTaskView.as_view(), name='delete_task'),
+    path('<slug:task_slug>/add_articles_to_task', views.AddArticlesToTaskView.as_view(), name='task_add_articles'),
+    path('<slug:task_slug>/edit_articles_in_task', views.EditArticlesInTaskView.as_view(), name='task_edit_articles'),
+    path('edit_task/<slug:task_slug>', views.EditTaskView.as_view(), name='edit_task'),
+    path('delete_task/<slug:task_slug>', views.DeleteTaskView.as_view(), name='delete_task'),
     #CONTRACT
     path('contracts/', views.ContractsView.as_view(), name='contracts'),
     path('contract/<int:contract_id>', views.ContractDetailsView.as_view(), name='contract_details'),

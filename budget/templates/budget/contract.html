@@ -10,7 +10,7 @@
         <div><b>General info:</b>
             <ul>
                 <li>Date: {{ contract.date }}</li>
-                <li>Task: <a href="{% url 'budget:task_details' contract.task.id %}">{{ contract.task.title }}</a></li>
+                <li>Task: <a href="{% url 'budget:task_details' contract.task.slug %}">{{ contract.task.title }}</a></li>
                 <li>Contractor: <a
                         href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a>
                 </li>

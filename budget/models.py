@@ -41,7 +41,7 @@ class Task(models.Model):
         return f'Title {self.title}, unit {self.unit}, section {self.section}'
 
     def get_absolute_url(self):
-        return reverse('budget:task_details', kwargs={'task_id': self.pk})
+        return reverse('budget:task_details', kwargs={'task_slug': self.slug})
 
     def task_value(self):
         value = TaskArticles.objects.filter(task=self).aggregate(total=Sum('value'))['total']

@@ -79,20 +79,20 @@
         <div class="row">
             <div class="col-sm">
                 {% if perms.budget.change_task %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_task' task.id %}" role="button">
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_task' task.slug %}" role="button">
                         Edit task general info</a></div>
                 {% endif %}
 
             <div class="col-sm">
                 {% if perms.budget.change_taskarticles %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:task_edit_articles' task.id %}"
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:task_edit_articles' task.slug %}"
                        role="button">
                         Edit articles in task</a></div>
                 {% endif %}
 
             <div class="col-sm">
                 {% if perms.budget.delete_task %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_task' task.id %}"
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_task' task.slug %}"
                        role="button">
                         Delete task</a></div>
                 {% endif %}

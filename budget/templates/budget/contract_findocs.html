@@ -7,7 +7,7 @@
     {{ block.super }}
     <h2>Contract: <a href="{% url 'budget:contract_details' contract.id %}">{{ contract.number }}</a></h2>
     <h4>Contractor: <a href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a></h4>
-    <h4>Task: <a href="{% url 'budget:task_details' contract.task.id %}">{{ contract.task.title }}</a> </h4>
+    <h4>Task: <a href="{% url 'budget:task_details' contract.task.slug %}">{{ contract.task.title }}</a> </h4>
     <h4>Contract value: {{ contract.contract_value }} PLN</h4>
     <h4>Contract peformance: {{ contract.contract_performance }} PLN</h4>
     {% if not contract.contract_performance %}

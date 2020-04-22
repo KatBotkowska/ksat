@@ -40,11 +40,12 @@ class TaskDetailsView(DetailView):
     model = Task
     template_name = 'budget/task.html'
     context_object_name = 'task'
-    pk_url_kwarg = 'task_id'
+    #pk_url_kwarg = 'task_id'
+    slug_url_kwarg = 'task_slug'
 
     def render_to_response(self, context, **response_kwargs):
         response = super().render_to_response(context, **response_kwargs)
-        task_id = Task.objects.get(id=self.kwargs.get('task_id')).id
+        task_id = Task.objects.get(slug=self.kwargs.get('task_slug')).id
         response.set_cookie('task_id', task_id, max_age=30)
         return response
 
@@ -60,7 +61,7 @@ class AddTaskView(PermissionRequiredMixin,FormView):
     def form_valid(self, form):
         task = form.save(commit=False)
         task.save()
-        self.success_url = reverse('budget:task_add_articles', kwargs={'task_id': task.pk})
+        self.success_url = reverse('budget:task_add_articles', kwargs={'task_slug': task.slug})
         return HttpResponseRedirect(self.success_url)
 
 
@@ -71,18 +72,18 @@ class AddArticlesToTaskView(PermissionRequiredMixin, FormView):
     login_url = reverse_lazy('budget:login')
     permission_denied_message = 'You dont\'t have permission to add articles to task'
     template_name = 'budget/add_articles_to_task.html'
-    pk_url_kwarg = 'task_id'
+    pk_url_kwarg = 'task_slug'
     success_url = ''
 
     def get_task(self):
-        task_id = self.kwargs.get('task_id')
-        return Task.objects.get(id=task_id)
+        task_slug = self.kwargs.get('task_slug')
+        return Task.objects.get(slug=task_slug)
 
     def get_form_class(self):
         return formset_factory(AddArticlesToTaskForm, extra=6)
 
     def get_success_url(self):
-        return reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
+        return reverse('budget:task_details', kwargs={'task_slug': self.kwargs.get('task_slug')})
 
     def form_valid(self, form):
         for single_form in form:
@@ -105,7 +106,7 @@ class EditArticlesInTaskView(PermissionRequiredMixin, UpdateView):
     model = TaskArticles
     form_class = EditArticlesInTaskForm
     template_name = 'budget/task_edit_articles.html'
-    pk_url_kwarg = 'task_id'
+    slug_url_kwarg = 'task_slug'
     success_url = ''
 
     def get_object(self, queryset=None):
@@ -115,11 +116,11 @@ class EditArticlesInTaskView(PermissionRequiredMixin, UpdateView):
         return TaskArticles.objects.filter(task=self.get_task())
 
     def get_task(self):
-        task_id = self.kwargs.get('task_id')
-        return Task.objects.get(id=task_id)
+        task_slug = self.kwargs.get('task_slug')
+        return Task.objects.get(slug=task_slug)
 
     def get_success_url(self):
-        return reverse('budget:task_details', kwargs={'task_id': self.kwargs.get('task_id')})
+        return reverse('budget:task_details', kwargs={'task_slug': self.kwargs.get('task_slug')})
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -153,7 +154,7 @@ class EditTaskView(PermissionRequiredMixin, UpdateView):
     model = Task
     form_class = EditTaskForm
     template_name = 'budget/edit_task.html'
-    pk_url_kwarg = 'task_id'
+    slug_url_kwarg = 'task_slug'
     success_url = reverse_lazy('budget:task_details')
 
     def get_success_url(self):
@@ -167,7 +168,7 @@ class DeleteTaskView(PermissionRequiredMixin, DeleteView):
     permission_denied_message = 'You dont\'t have permission to delete task'
     model = Task
     template_name = 'budget/delete_task.html'
-    pk_url_kwarg = 'task_id'
+    slug_url_kwarg = 'task_slug'
     success_url = reverse_lazy('budget:tasks')
 
 
