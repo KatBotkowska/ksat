@@ -1,3 +1,4 @@
+from autoslug import AutoSlugField
 from django.db import models
 from django.db.models import Sum
 from django.contrib.auth.models import AbstractUser
@@ -34,6 +35,7 @@ class Task(models.Model):
     unit = models.SmallIntegerField()
     section = models.SmallIntegerField()
     article = models.ManyToManyField(Articles, through='TaskArticles')
+    slug = AutoSlugField(null=True, default=None, unique=True, populate_from='title')
 
     def __str__(self):
         return f'Title {self.title}, unit {self.unit}, section {self.section}'
