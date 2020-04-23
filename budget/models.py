@@ -4,6 +4,7 @@ from django.db.models import Sum
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
 from django.utils.text import slugify
+from unidecode import unidecode
 
 
 class User(AbstractUser):
@@ -94,7 +95,7 @@ class Contractor(models.Model):
     slug = models.SlugField(max_length=200, unique=True, null=True, default=None)
 
     def save(self, *args, **kwargs):
-        self.slug_name = '-'.join((slugify(self.name, allow_unicode=True), slugify(self.last_name, allow_unicode=True)))
+        self.slug_name = '-'.join((slugify(unidecode(self.name), allow_unicode=True), slugify(unidecode(self.last_name), allow_unicode=True)))
         super(Contractor, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

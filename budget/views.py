@@ -14,6 +14,7 @@ from django.views.generic import ListView, CreateView, DetailView, DeleteView, U
 from django.views.generic.base import View, TemplateView
 from django.utils.text import slugify
 from ipware import get_client_ip
+from unidecode import unidecode
 
 from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet, EditArticlesInTaskForm, \
     EditArticlesInTaskFormSet, EditTaskForm, AddContractForm, AddArticlesToContractForm, \
@@ -355,7 +356,7 @@ class AddContractorView(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.slug = '-'.join((slugify(form.cleaned_data['name'], allow_unicode=True), slugify(form.cleaned_data['last_name'], allow_unicode=True)))
+        instance.slug = '-'.join((slugify(unidecode(form.cleaned_data['name']), allow_unicode=True), slugify(unidecode(form.cleaned_data['last_name']), allow_unicode=True)))
         instance.save()
         return super().form_valid(form)
 
@@ -376,7 +377,7 @@ class EditContractorView(PermissionRequiredMixin, UpdateView):
         if form.has_changed():
             instance = form.save(commit=False)
             if 'name' in form.changed_data or 'last_name' in form.changed_data:
-                instance.slug = '-'.join((form.cleaned_data['name'], form.cleaned_data['last_name']))
+                instance.slug = '-'.join((slugify(unidecode(form.cleaned_data['name'])), slugify(unidecode(form.cleaned_data['last_name']))))
                 instance.save()
         return super().form_valid(form)
 
