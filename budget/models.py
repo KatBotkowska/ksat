@@ -94,7 +94,7 @@ class Contractor(models.Model):
     slug = models.SlugField(max_length=200, unique=True, null=True, default=None)
 
     def save(self, *args, **kwargs):
-        self.slug_name = '-'.join((slugify(self.name), slugify(self.last_name)))
+        self.slug_name = '-'.join((slugify(self.name, allow_unicode=True), slugify(self.last_name, allow_unicode=True)))
         super(Contractor, self).save(*args, **kwargs)
 
     def get_absolute_url(self):

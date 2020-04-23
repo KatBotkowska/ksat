@@ -355,7 +355,7 @@ class AddContractorView(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         instance = form.save(commit=False)
-        instance.slug = '-'.join((slugify(form.cleaned_data['name']), slugify(form.cleaned_data['last_name'])))
+        instance.slug = '-'.join((slugify(form.cleaned_data['name'], allow_unicode=True), slugify(form.cleaned_data['last_name'], allow_unicode=True)))
         instance.save()
         return super().form_valid(form)
 
