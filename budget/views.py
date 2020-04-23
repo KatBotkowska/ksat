@@ -339,7 +339,7 @@ class ContractorDetailsView(LoginRequiredMixin, DetailView):
     model = Contractor
     template_name = 'budget/contractor.html'
     context_object_name = 'contractor'
-    pk_url_kwarg = 'contractor_id'
+    slug_url_kwarg = 'contractor_slug'
 
 
 class AddContractorView(PermissionRequiredMixin, CreateView):
@@ -360,7 +360,7 @@ class EditContractorView(PermissionRequiredMixin, UpdateView):
     permission_denied_message = 'You dont\'t have permission to edit contractor'
     model = Contractor
     fields = '__all__'
-    pk_url_kwarg = 'contractor_id'
+    slug_url_kwarg = 'contractor_slug'
     template_name = 'budget/edit_contractor.html'
 
     # success_url = reverse_lazy('budget:contractor_details')
@@ -376,7 +376,7 @@ class DeleteContractorView(PermissionRequiredMixin, DeleteView):
     permission_denied_message = 'You dont\'t have permission to delete contractor'
     model = Contractor
     template_name = 'budget/delete_contractor.html'
-    pk_url_kwarg = 'contractor_id'
+    slug_url_kwarg = 'contractor_slug'
     success_url = reverse_lazy('budget:contractors')
 
 

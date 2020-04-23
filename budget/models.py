@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import Sum
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
+from django.utils.text import slugify
 
 
 class User(AbstractUser):
@@ -90,9 +91,14 @@ class Contractor(models.Model):
     name = models.CharField(max_length=128)
     last_name = models.CharField(max_length=128)
     num = models.SmallIntegerField(blank=True)
+    slug = models.SlugField(max_length=200, unique=True, null=True, default=None)
+
+    def save(self, *args, **kwargs):
+        self.slug_name = '-'.join((slugify(self.name), slugify(self.last_name)))
+        super(Contractor, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('budget:contractor_details', kwargs={'contractor_id': self.pk})
+        return reverse('budget:contractor_details', kwargs={'contractor_slug': self.slug})
 
     def __str__(self):
         return f'{self.name} {self.last_name}'

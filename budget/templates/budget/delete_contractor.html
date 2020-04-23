@@ -10,6 +10,6 @@
         <p>Are you sure you want to delete contractor: {{ contractor }}</p>
         <div><button type="submit" class="btn btn-primary">Delete</button></div>
     </form>
-    <a href="{% url 'budget:contractor_details' contractor.id %}"><div><button type="submit" class="btn btn-primary">No</button></div></a>
+    <a href="{% url 'budget:contractor_details' contractor.slug %}"><div><button type="submit" class="btn btn-primary">No</button></div></a>
 
 {% endblock %}

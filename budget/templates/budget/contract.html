@@ -12,7 +12,7 @@
                 <li>Date: {{ contract.date }}</li>
                 <li>Task: <a href="{% url 'budget:task_details' contract.task.slug %}">{{ contract.task.title }}</a></li>
                 <li>Contractor: <a
-                        href="{% url 'budget:contractor_details' contract.contractor.id %}">{{ contract.contractor }}</a>
+                        href="{% url 'budget:contractor_details' contract.contractor.slug %}">{{ contract.contractor }}</a>
                 </li>
                 <li>Total value: {{ contract.contract_value }}</li>
                 <li>Performance: {{ contract.contract_performance }}</li>

@@ -26,10 +26,10 @@ urlpatterns = [
     path('delete_contract/<int:contract_id>', views.DeleteContractView.as_view(), name='delete_contract'),
     #CONTRACTORS
     path('contractors/', views.ContractorView.as_view(), name='contractors'),
-    path('contractor/<int:contractor_id>', views.ContractorDetailsView.as_view(), name='contractor_details'),
+    path('contractor/<slug:contractor_slug>', views.ContractorDetailsView.as_view(), name='contractor_details'),
     path('add_contractor/', views.AddContractorView.as_view(), name='add_contractor'),
-    path('edit_contractor/<int:contractor_id>', views.EditContractorView.as_view(), name='edit_contractor'),
-    path('delete_contractor/<int:contractor_id>', views.DeleteContractorView.as_view(), name='delete_contractor'),
+    path('edit_contractor/<slug:contractor_slug>', views.EditContractorView.as_view(), name='edit_contractor'),
+    path('delete_contractor/<slug:contractor_slug>', views.DeleteContractorView.as_view(), name='delete_contractor'),
     #FINANCIAL DOCUMENTS
     path('documents/conractor/<int:contractor_id>/docs', views.FinancialDocContractorView.as_view(), name ='contractor-findocs'),
     path('documents/conract/<int:contract_id>/docs', views.FinancialDocContractView.as_view(), name ='contract-findocs'),
