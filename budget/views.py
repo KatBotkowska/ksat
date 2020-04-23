@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, CreateView, DetailView, DeleteView, UpdateView, FormView
 from django.views.generic.base import View, TemplateView
+from django.utils.text import slugify
 from ipware import get_client_ip
 
 from .forms import AddTaskForm, AddArticlesToTaskForm, AddArticlesToTaskFormSet, EditArticlesInTaskForm, \
@@ -348,9 +349,15 @@ class AddContractorView(PermissionRequiredMixin, CreateView):
     login_url = reverse_lazy('budget:login')
     permission_denied_message = 'You dont\'t have permission to add contractor'
     model = Contractor
-    fields = '__all__'
+    fields = ('name', 'last_name', 'num')
     template_name = 'budget/add_contractor.html'
     success_url = reverse_lazy('budget:contractors')
+
+    def form_valid(self, form):
+        instance = form.save(commit=False)
+        instance.slug = '-'.join((slugify(form.cleaned_data['name']), slugify(form.cleaned_data['last_name'])))
+        instance.save()
+        return super().form_valid(form)
 
 
 class EditContractorView(PermissionRequiredMixin, UpdateView):
@@ -359,14 +366,22 @@ class EditContractorView(PermissionRequiredMixin, UpdateView):
     login_url = reverse_lazy('budget:login')
     permission_denied_message = 'You dont\'t have permission to edit contractor'
     model = Contractor
-    fields = '__all__'
+    fields = ('name', 'last_name', 'num')
     slug_url_kwarg = 'contractor_slug'
     template_name = 'budget/edit_contractor.html'
 
     # success_url = reverse_lazy('budget:contractor_details')
 
+    def form_valid(self, form):
+        if form.has_changed():
+            instance = form.save(commit=False)
+            if 'name' in form.changed_data or 'last_name' in form.changed_data:
+                instance.slug = '-'.join((form.cleaned_data['name'], form.cleaned_data['last_name']))
+                instance.save()
+        return super().form_valid(form)
+
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return reverse_lazy('budget:contractor_details', kwargs={'contractor_slug': self.object.slug})
 
 
 class DeleteContractorView(PermissionRequiredMixin, DeleteView):
