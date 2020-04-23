@@ -38,8 +38,8 @@ class ContractArticleAdmin(admin.ModelAdmin):
 
 @admin.register(Contractor)
 class ContractorAdmin(admin.ModelAdmin):
-    list_display = ['name', 'last_name']
-    list_filter = ['last_name', 'num']
+    list_display = ['name', 'last_name', 'slug']
+    list_filter = ['last_name', 'num', 'slug']
 
 @admin.register(FinancialDocument)
 class FinancialDocumentAdmin(admin.ModelAdmin):
