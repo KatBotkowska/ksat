@@ -9,7 +9,7 @@
     <div>
         <b>Document - general info:</b>
 <ul>
-    <li>Contract: <a href="{% url 'budget:contract_details' findoc.contract.id %}"> {{ findoc.contract.number }}</a></li>
+    <li>Contract: <a href="{% url 'budget:contract_details' findoc.contract.slug %}"> {{ findoc.contract.number }}</a></li>
     <li>Contractor: <a href="{% url 'budget:contractor_details' findoc.contractor.slug %}">{{ findoc.contractor }}</a></li>
     <li>Task: <a href="{% url 'budget:task_details' findoc.contract.task.slug %}">{{ findoc.contract.task.title }}</a> </li>
     <li>Date: {{ findoc.date }}</li>

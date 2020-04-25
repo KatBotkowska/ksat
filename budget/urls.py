@@ -18,12 +18,12 @@ urlpatterns = [
     path('delete_task/<slug:task_slug>', views.DeleteTaskView.as_view(), name='delete_task'),
     #CONTRACT
     path('contracts/', views.ContractsView.as_view(), name='contracts'),
-    path('contract/<int:contract_id>', views.ContractDetailsView.as_view(), name='contract_details'),
+    path('contract/<slug:contract_slug>', views.ContractDetailsView.as_view(), name='contract_details'),
     path('add_contract/', views.AddContractView.as_view(), name='add_contract'),
-    path('<int:contract_id>/add_articles_to_contract', views.AddArticlesToContractView.as_view(), name='contract_add_articles'),
-    path('<int:contract_id>/edit_articles_in_contract', views.EditArticlesInContractView.as_view(), name='contract_edit_articles'),
-    path('edit_contract/<int:contract_id>', views.EditContractView.as_view(), name='edit_contract'),
-    path('delete_contract/<int:contract_id>', views.DeleteContractView.as_view(), name='delete_contract'),
+    path('add_articles_to_contract/<slug:contract_slug>', views.AddArticlesToContractView.as_view(), name='contract_add_articles'),
+    path('edit_articles_in_contract/<slug:contract_slug>', views.EditArticlesInContractView.as_view(), name='contract_edit_articles'),
+    path('edit_contract/<slug:contract_slug>', views.EditContractView.as_view(), name='edit_contract'),
+    path('delete_contract/<slug:contract_slug>', views.DeleteContractView.as_view(), name='delete_contract'),
     #CONTRACTORS
     path('contractors/', views.ContractorView.as_view(), name='contractors'),
     path('contractor/<slug:contractor_slug>', views.ContractorDetailsView.as_view(), name='contractor_details'),

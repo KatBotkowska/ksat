@@ -29,7 +29,7 @@
                     <td>{{ forloop.counter }}</td>
                     <td><a href="{{ findoc.get_absolute_url }}">{{ findoc.number }}</a></td>
                     <td>{{ findoc.date }}</td>
-                    <td>{{ findoc.contract.number }}</td>
+                    <td><a href="{{ findoc.contract.get_absolute_url }}">{{ findoc.contract.number }}</a></td>
                     <td><a href="{{ findoc.contractor.get_absolute_url }}">{{ findoc.contractor }}</a></td>
                     <td>{{ findoc.fin_doc_value|floatformat:2 }}</td>
                     <td>{{ findoc.payment_date1 }}</td>

@@ -23,7 +23,7 @@
                 <td>{% if contractor.contracts.all %}
                  <ul>   {% for contract in  contractor.contracts.all %}
 
-                            <li><a href="{% url 'budget:contract_details' contract.id %}">{{ contract.number }},
+                            <li><a href="{% url 'budget:contract_details' contract.slug %}">{{ contract.number }},
                                 value: {{ contract.contract_value }},
                                 performance: {{ contract.contract_performance }}</a></li>
 

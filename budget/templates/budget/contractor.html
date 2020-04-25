@@ -21,7 +21,7 @@
     {% else %}
         {% for contract in contractor.contracts.all %}
             <ul>
-                <li><a href="{% url 'budget:contract_details' contract.id %}">Number: {{ contract.number }},</a>  date: {{ contract.date }}, value: {{ contract.contract_value }} PLN</li>
+                <li><a href="{% url 'budget:contract_details' contract.slug %}">Number: {{ contract.number }},</a>  date: {{ contract.date }}, value: {{ contract.contract_value }} PLN</li>
             </ul>
         {% endfor %}{% endif %}
     </div>
@@ -46,7 +46,7 @@
             {% for fd in contractor.fds.all %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td><a href="{% url 'budget:contract_details' fd.contract.id %}">{{ fd.contract.number }}</a></td>
+                    <td><a href="{% url 'budget:contract_details' fd.contract.slug %}">{{ fd.contract.number }}</a></td>
                     <td><a href="{% url 'budget:task_details' fd.contract.task.slug %}">{{ fd.contract.task.title }}</a></td>
                     <td><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a></td>
                     <td>{{ fd.date }}</td>

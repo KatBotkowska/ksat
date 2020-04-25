@@ -10,6 +10,6 @@
         <p>Are you sure you want to delete contract: {{ contract.number }}</p>
         <div><button type="submit" class="btn btn-primary">Delete</button></div>
     </form>
-    <a href="{% url 'budget:contract_details' contract.id %}"><div><button type="submit" class="btn btn-primary">No</button></div></a>
+    <a href="{{contract.get_absolute_url}}"><div><button type="submit" class="btn btn-primary">No</button></div></a>
 
 {% endblock %}

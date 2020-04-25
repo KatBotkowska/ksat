@@ -132,12 +132,13 @@ class Contract(models.Model):
     contractor = models.ForeignKey(Contractor, default=None, on_delete=models.CASCADE, related_name='contracts',
                                    related_query_name='contract')
     article = models.ManyToManyField(Articles, through='ContractArticle')
+    slug = AutoSlugField(null=True, default=None, unique=True, populate_from='number')
 
     def __str__(self):
         return f'N: {self.number}, date {self.date}, contractor {self.contractor}'
 
     def get_absolute_url(self):
-        return reverse('budget:contract_details', kwargs={'contract_id': self.pk})
+        return reverse('budget:contract_details', kwargs={'contract_slug': self.slug})
 
     def contract_value(self):
         value = ContractArticle.objects.filter(contract=self).aggregate(total=Sum('value'))['total']

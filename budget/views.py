@@ -185,12 +185,12 @@ class ContractsView(ListView):
 class ContractDetailsView(DetailView):
     model = Contract
     template_name = 'budget/contract.html'
-    pk_url_kwarg = 'contract_id'
+    slug_url_kwarg = 'contract_slug'
     context_object_name = 'contract'
 
     def render_to_response(self, context, **response_kwargs):
         response = super().render_to_response(context, **response_kwargs)
-        contract_id = Contract.objects.get(id=self.kwargs.get('contract_id')).id
+        contract_id = Contract.objects.get(slug=self.kwargs.get('contract_slug')).id
         response.set_cookie('contract', contract_id, max_age=30)
         return response
 
@@ -207,7 +207,7 @@ class AddContractView(PermissionRequiredMixin, FormView):
     def form_valid(self, form):
         contract = form.save(commit=False)
         contract.save()
-        self.success_url = reverse('budget:contract_add_articles', kwargs={'contract_id': contract.pk})
+        self.success_url = reverse('budget:contract_add_articles', kwargs={'contract_slug': contract.slug})
         return HttpResponseRedirect(self.success_url)
 
     def get_initial(self):
@@ -223,18 +223,18 @@ class AddArticlesToContractView(PermissionRequiredMixin, FormView):
     login_url = reverse_lazy('budget:login')
     permission_denied_message = 'You dont\'t have permission to add articles to contract'
     template_name = 'budget/add_articles_to_contract.html'
-    pk_url_kwarg = 'contract_id'
+    slug_url_kwarg = 'contract_slug'
     success_url = ""
 
     def get_contract(self):
-        contract_id = self.kwargs.get('contract_id')
-        return Contract.objects.get(id=contract_id)
+        contract_slug = self.kwargs.get('contract_slug')
+        return Contract.objects.get(slug=contract_slug)
 
     def get_form_class(self):
         return formset_factory(AddArticlesToContractForm, extra=0)
 
     def get_success_url(self):
-        return reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
+        return reverse('budget:contract_details', kwargs={'contract_slug': self.kwargs.get('contract_slug')})
 
     def form_valid(self, form):
         for single_form in form:
@@ -262,7 +262,7 @@ class EditArticlesInContractView(PermissionRequiredMixin, UpdateView):
     model = ContractArticle
     form_class = EditArticlesInContractForm
     template_name = 'budget/contract_edit_articles.html'
-    pk_url_kwarg = 'contract_id'
+    slug_url_kwarg = 'contract_slug'
     success_url = ''
 
     def get_object(self, queryset=None):
@@ -275,11 +275,11 @@ class EditArticlesInContractView(PermissionRequiredMixin, UpdateView):
         return ContractArticle.objects.filter(contract=self.get_contract())
 
     def get_contract(self):
-        contract_id = int(self.kwargs.get('contract_id'))
-        return Contract.objects.get(pk=contract_id)
+        contract_slug = self.kwargs.get('contract_slug')
+        return Contract.objects.get(slug=contract_slug)
 
     def get_success_url(self):
-        return reverse('budget:contract_details', kwargs={'contract_id': self.kwargs.get('contract_id')})
+        return reverse('budget:contract_details', kwargs={'contract_slug': self.kwargs.get('contract_slug')})
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -314,7 +314,15 @@ class EditContractView(PermissionRequiredMixin, UpdateView):
     model = Contract
     form_class = EditContractForm
     template_name = 'budget/edit_contract.html'
-    pk_url_kwarg = 'contract_id'
+    slug_url_kwarg = 'contract_slug'
+
+    def form_valid(self, form):
+        if form.has_changed():
+            instance = form.save(commit=False)
+            if 'number' in form.changed_data:
+                instance.slug = slugify(unidecode(form.cleaned_data['number']))
+                instance.save()
+        return super().form_valid(form)
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -323,7 +331,7 @@ class EditContractView(PermissionRequiredMixin, UpdateView):
 class DeleteContractView(DeleteView):
     model = Contract
     template_name = 'budget/delete_contract.html'
-    pk_url_kwarg = 'contract_id'
+    slug_url_kwarg = 'contract_slug'
     success_url = reverse_lazy('budget:contracts')
 
 

@@ -15,7 +15,7 @@ class ArticlesAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['title', 'unit', 'section']
+    list_display = ['title', 'unit', 'section', 'slug']
     list_filter = ['title']
 
 
@@ -27,7 +27,7 @@ class TaskArticlesAdmin(admin.ModelAdmin):
 
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
-    list_display = ['number', 'contractor', 'id']
+    list_display = ['number', 'contractor', 'id', 'slug']
     list_filter = ['number', 'contractor']
 
 

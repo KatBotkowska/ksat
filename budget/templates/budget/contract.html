@@ -50,20 +50,20 @@
         <div class="row">
             <div class="col-sm">
                 {% if perms.budget.change_contract %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_contract' contract.id %}" role="button">
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_contract' contract.slug %}" role="button">
                         Edit contract general info</a></div>
                 {% endif %}
 
             <div class="col-sm">
                 {% if perms.budget.change_contractarticle %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:contract_edit_articles' contract.id %}"
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:contract_edit_articles' contract.slug %}"
                        role="button">
                         Edit articles in contract</a></div>
                 {% endif %}
 
             <div class="col-sm">
                 {% if perms.budget.delete_contract %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_contract' contract.id %}"
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_contract' contract.slug %}"
                        role="button">
                         Delete contract</a></div>
                 {% endif %}
