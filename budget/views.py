@@ -159,6 +159,14 @@ class EditTaskView(PermissionRequiredMixin, UpdateView):
     slug_url_kwarg = 'task_slug'
     success_url = reverse_lazy('budget:task_details')
 
+    def form_valid(self, form):
+        if form.has_changed():
+            instance = form.save(commit=False)
+            if 'title' in form.changed_data:
+                instance.slug = slugify(unidecode(form.cleaned_data['title']))
+                instance.save()
+        return super().form_valid(form)
+
     def get_success_url(self):
         return self.object.get_absolute_url()
 
