@@ -26,6 +26,5 @@ Model users with mixed access to views.
 ## Status
 
 ### To do:
-* change id in urls for slug
 * possibility to add new articles to existing objects (tasks, contracts, financial documents)
 * export data to excell
