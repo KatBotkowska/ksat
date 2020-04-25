@@ -68,7 +68,7 @@
         <a href="{% url 'budget:add_contract' %}">You can add a new contract for that task.</a>{% endif %}
     {% if task.performance %}
         <div>
-            <h3><a href="{% url 'budget:task-findocs' task.id %}">Financial documents for task - details</a></h3>
+            <h3><a href="{% url 'budget:task-findocs' task.slug %}">Financial documents for task - details</a></h3>
         </div>
     {% else %}
         <div>

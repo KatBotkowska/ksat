@@ -39,7 +39,7 @@
                         <li><a href="{{ fd.get_absolute_url }}">{{ fd.number }}</a>, date: {{ fd.date }}</li>
                     {% endfor %}
                 </ul>
-                <h3><a href="{% url 'budget:contract-findocs' contract.id %}">Financial documents for contract -
+                <h3><a href="{% url 'budget:contract-findocs' contract.slug %}">Financial documents for contract -
                     details</a>
                 </h3>
             </div>

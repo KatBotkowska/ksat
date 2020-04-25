@@ -95,7 +95,7 @@ class Contractor(models.Model):
     slug = models.SlugField(max_length=200, unique=True, null=True, default=None)
 
     def save(self, *args, **kwargs):
-        self.slug_name = '-'.join((slugify(unidecode(self.name), allow_unicode=True), slugify(unidecode(self.last_name), allow_unicode=True)))
+        self.slug = '-'.join((slugify(unidecode(self.name), allow_unicode=True), slugify(unidecode(self.last_name), allow_unicode=True)))
         super(Contractor, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -186,9 +186,14 @@ class FinancialDocument(models.Model):
     payment_date1 = models.DateField(blank=True, null=True)
     payment_date2 = models.DateField(blank=True, null=True)
     article = models.ManyToManyField(Articles, through='FinDocumentArticle')
+    slug = models.SlugField(max_length=200, unique=True, null=True, default=None)
+
+    def save(self, *args, **kwargs):
+        self.slug = '-'.join((slugify(unidecode(self.contract.number), allow_unicode=True), slugify(unidecode(self.number), allow_unicode=True)))
+        super(FinancialDocument, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('budget:findoc_details', kwargs={'findoc_id': self.pk})
+        return reverse('budget:findoc_details', kwargs={'findoc_slug': self.slug})
 
     def fin_doc_value(self):
         value = FinDocumentArticle.objects.filter(fin_doc=self).aggregate(total=Sum('value'))['total']

@@ -26,20 +26,20 @@
 <div class="row">
             <div class="col-sm">
     {% if perms.budget.change_financialdocument %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_doc' findoc.id %}" role="button">
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:edit_doc' findoc.slug %}" role="button">
                         Edit document general info</a></div>
                 {% endif %}
 
             <div class="col-sm">
                 {% if perms.budget.change_findocumentarticle %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:findoc_edit_articles' findoc.id %}"
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:findoc_edit_articles' findoc.slug %}"
                        role="button">
                         Edit articles in document</a></div>
                 {% endif %}
 
             <div class="col-sm">
                 {% if perms.budget.delete_financialdocument %}
-                    <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_doc' findoc.id %}"
+                    <a class="btn btn-primary btn-lg" href="{% url 'budget:delete_doc' findoc.slug %}"
                        role="button">
                         Delete document</a></div>
                 {% endif %}

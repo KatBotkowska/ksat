@@ -199,7 +199,7 @@ class ContractDetailsView(DetailView):
     def render_to_response(self, context, **response_kwargs):
         response = super().render_to_response(context, **response_kwargs)
         contract_id = Contract.objects.get(slug=self.kwargs.get('contract_slug')).id
-        response.set_cookie('contract', contract_id, max_age=30)
+        response.set_cookie('contract_id', contract_id, max_age=30)
         return response
 
 
@@ -420,13 +420,13 @@ class FinancialDocContractorView(ListView):
     context_object_name = 'findocs'
 
     def get_queryset(self):
-        contractor = Contractor.objects.get(pk=self.kwargs.get('contractor_id'))
+        contractor = Contractor.objects.get(slug=self.kwargs.get('contractor_slug'))
         fin_docs = FinancialDocument.objects.filter(contractor=contractor).order_by('contract', 'contract__task')
         return fin_docs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['contractor'] = Contractor.objects.get(pk=self.kwargs.get('contractor_id'))
+        ctx['contractor'] = Contractor.objects.get(slug=self.kwargs.get('contractor_slug'))
         return ctx
 
 
@@ -436,13 +436,13 @@ class FinancialDocContractView(ListView):
     context_object_name = 'findocs'
 
     def get_queryset(self):
-        contract = Contract.objects.get(pk=self.kwargs.get('contract_id'))
+        contract = Contract.objects.get(slug=self.kwargs.get('contract_slug'))
         fin_docs = FinancialDocument.objects.filter(contract=contract).order_by('contractor', 'contract__task')
         return fin_docs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['contract'] = Contract.objects.get(pk=self.kwargs.get('contract_id'))
+        ctx['contract'] = Contract.objects.get(slug=self.kwargs.get('contract_slug'))
         return ctx
 
 
@@ -452,14 +452,14 @@ class FinancialDocTaskView(ListView):
     context_object_name = 'findocs'
 
     def get_queryset(self):
-        task = Task.objects.get(pk=self.kwargs.get('task_id'))
+        task = Task.objects.get(slug=self.kwargs.get('task_slug'))
         contracts = Contract.objects.filter(task=task)
         fin_docs = FinancialDocument.objects.filter(contract__task=task).order_by('contract')
         return fin_docs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['task'] = Task.objects.get(pk=self.kwargs.get('task_id'))
+        ctx['task'] = Task.objects.get(slug=self.kwargs.get('task_slug'))
         return ctx
 
 
@@ -467,7 +467,7 @@ class FinancialDocDetailsView(DetailView):
     model = FinancialDocument
     template_name = 'budget/findoc.html'
     context_object_name = 'findoc'
-    pk_url_kwarg = 'findoc_id'
+    slug_url_kwarg = 'findoc_slug'
 
 
 class AddFinancialDocView(PermissionRequiredMixin, FormView):
@@ -480,7 +480,7 @@ class AddFinancialDocView(PermissionRequiredMixin, FormView):
     success_url = reverse_lazy('budget:findoc_add_articles')
 
     def get_initial(self):
-        if 'contract' in self.request.COOKIES:
+        if 'contract_id' in self.request.COOKIES:
             initial = super().get_initial()
             initial['contract_id'] = int(self.request.COOKIES.get('contract'))
             return initial
@@ -489,7 +489,7 @@ class AddFinancialDocView(PermissionRequiredMixin, FormView):
         findoc = form.save(commit=False)
         findoc.contractor = form.cleaned_data['contract'].contractor
         findoc.save()
-        self.success_url = reverse('budget:findoc_add_articles', kwargs={'findoc_id': findoc.pk})
+        self.success_url = reverse('budget:findoc_add_articles', kwargs={'findoc_slug': findoc.slug})
         return HttpResponseRedirect(self.success_url)
 
 
@@ -501,18 +501,18 @@ class AddArticlesToFinDocView(PermissionRequiredMixin, FormView):
     # model = FinDocumentArticle
     # form_class = AddArticlesToFinDocForm
     template_name = 'budget/add_articles_to_findoc.html'
-    pk_url_kwarg = 'findoc_id'
+    slug_url_kwarg = 'findoc_slug'
     success_url = ''
 
     def get_findoc(self):
-        findoc_id = self.kwargs.get('findoc_id')
-        return FinancialDocument.objects.get(id=findoc_id)
+        findoc_slug = self.kwargs.get('findoc_slug')
+        return FinancialDocument.objects.get(slug=findoc_slug)
 
     def get_form_class(self):
         return formset_factory(AddArticlesToFinDocForm, extra=0)
 
     def get_success_url(self):
-        return reverse('budget:findoc_details', kwargs={'findoc_id': self.kwargs.get('findoc_id')})
+        return reverse('budget:findoc_details', kwargs={'findoc_slug': self.kwargs.get('findoc_slug')})
 
     def form_valid(self, form):
         for single_form in form:
@@ -539,7 +539,7 @@ class EditFinancialDocView(PermissionRequiredMixin, UpdateView):
     permission_denied_message = 'You dont\'t have permission to edit findoc'
     model = FinancialDocument
     form_class = EditFinDocForm
-    pk_url_kwarg = 'findoc_id'
+    slug_url_kwarg = 'findoc_slug'
     template_name = 'budget/edit_findoc.html'
 
     def form_valid(self, form):
@@ -557,7 +557,7 @@ class EditArticlesInFinDocView(PermissionRequiredMixin, UpdateView):
     model = FinDocumentArticle
     form_class = EditArticlesInFinDocForm
     template_name = 'budget/findoc_edit_articles.html'
-    pk_url_kwarg = 'findoc_id'
+    slug_url_kwarg = 'findoc_slug'
     success_url = ""
 
     def get_object(self, queryset=None):
@@ -567,12 +567,12 @@ class EditArticlesInFinDocView(PermissionRequiredMixin, UpdateView):
     #     return FinDocumentArticle.objects.filter(fin_doc=self.get_findoc())
 
     def get_findoc(self):
-        findoc_id = self.kwargs.get('findoc_id')
-        return FinancialDocument.objects.get(pk=findoc_id)
+        findoc_slug = self.kwargs.get('findoc_slug')
+        return FinancialDocument.objects.get(slug=findoc_slug)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['findoc'] = FinancialDocument.objects.get(pk=self.kwargs.get('findoc_id'))
+        ctx['findoc'] = FinancialDocument.objects.get(slug=self.kwargs.get('findoc_slug'))
         ctx['formset'] = EditArticlesInFinDocFormSet(queryset=FinDocumentArticle.objects.filter(fin_doc=
                                                                                         self.get_findoc()))
         return ctx
@@ -596,7 +596,7 @@ class EditArticlesInFinDocView(PermissionRequiredMixin, UpdateView):
         return render(request, self.template_name, {"formset": formset})
 
     def get_success_url(self):
-        return reverse('budget:findoc_details', kwargs={'findoc_id': self.kwargs.get('findoc_id')})
+        return reverse('budget:findoc_details', kwargs={'findoc_slug': self.kwargs.get('findoc_slug')})
 
 
 class DeleteFinancialDocView(PermissionRequiredMixin, DeleteView):
@@ -606,11 +606,11 @@ class DeleteFinancialDocView(PermissionRequiredMixin, DeleteView):
     permission_denied_message = 'You dont\'t have permission to delete findoc'
     model = FinancialDocument
     template_name = 'budget/delete_findoc.html'
-    pk_url_kwarg = 'findoc_id'
+    slug_url_kwarg = 'findoc_slug'
 
     def get_success_url(self):
-        findoc = FinancialDocument.objects.get(pk=self.kwargs.get('findoc_id'))
-        return reverse('budget:contract-findocs', kwargs={'contract_id': findoc.contract.id})
+        findoc = FinancialDocument.objects.get(slug=self.kwargs.get('findoc_slug'))
+        return reverse('budget:contract-findocs', kwargs={'contract_slug': findoc.contract.slug})
 
 #Views for create user, login
 class UserRegistrationView(View):

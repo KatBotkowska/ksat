@@ -31,15 +31,15 @@ urlpatterns = [
     path('edit_contractor/<slug:contractor_slug>', views.EditContractorView.as_view(), name='edit_contractor'),
     path('delete_contractor/<slug:contractor_slug>', views.DeleteContractorView.as_view(), name='delete_contractor'),
     #FINANCIAL DOCUMENTS
-    path('documents/conractor/<int:contractor_id>/docs', views.FinancialDocContractorView.as_view(), name ='contractor-findocs'),
-    path('documents/conract/<int:contract_id>/docs', views.FinancialDocContractView.as_view(), name ='contract-findocs'),
-    path('documents/task/<int:task_id>/docs', views.FinancialDocTaskView.as_view(), name ='task-findocs'),
-    path('document/<int:findoc_id>', views.FinancialDocDetailsView.as_view(), name='findoc_details'),#TODO <'<int:contract_id>/<int:fd_id>'/'
-    path('add_findoc', views.AddFinancialDocView.as_view(), name='add_findoc'), #the same
-    path('<int:findoc_id>/add_articles_to_findoc', views.AddArticlesToFinDocView.as_view(), name='findoc_add_articles'),
-    path('edit_document/<int:findoc_id>', views.EditFinancialDocView.as_view(), name='edit_doc'),
-    path('<int:findoc_id>/edit_articles_in_findoc', views.EditArticlesInFinDocView.as_view(), name='findoc_edit_articles'),
-    path('delete_document/<int:findoc_id>', views.DeleteFinancialDocView.as_view(), name='delete_doc'),
+    path('documents/conractor/<slug:contractor_slug>/docs', views.FinancialDocContractorView.as_view(), name ='contractor-findocs'),
+    path('documents/conract/<slug:contract_slug>/docs', views.FinancialDocContractView.as_view(), name ='contract-findocs'),
+    path('documents/task/<slug:task_slug>/docs', views.FinancialDocTaskView.as_view(), name ='task-findocs'),
+    path('document/<slug:findoc_slug>', views.FinancialDocDetailsView.as_view(), name='findoc_details'),
+    path('add_findoc', views.AddFinancialDocView.as_view(), name='add_findoc'),
+    path('add_articles_to_findoc/<slug:findoc_slug>', views.AddArticlesToFinDocView.as_view(), name='findoc_add_articles'),
+    path('edit_document/<slug:findoc_slug>', views.EditFinancialDocView.as_view(), name='edit_doc'),
+    path('edit_articles_in_findoc/<slug:findoc_slug>/', views.EditArticlesInFinDocView.as_view(), name='findoc_edit_articles'),
+    path('delete_document/<slug:findoc_slug>', views.DeleteFinancialDocView.as_view(), name='delete_doc'),
     #USERS
     path('user_register', views.UserRegistrationView.as_view(), name='user_register'),
     path('login', views.LoginView.as_view(), name='login'),
