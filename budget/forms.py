@@ -1,3 +1,5 @@
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
@@ -5,6 +7,8 @@ from django.core.validators import validate_email
 from django.db.models import Sum
 from django.forms import ModelForm, Textarea, formset_factory, BaseFormSet
 from django.forms.models import modelformset_factory, BaseModelFormSet
+
+from Ksat import settings
 from .models import Articles, Task, Contract, Contractor, FinancialDocument, TaskArticles, ContractArticle, \
     FinDocumentArticle, User
 
@@ -349,6 +353,18 @@ class UserForm(UserCreationForm):
     phone_number=forms.SlugField()
     name = forms.CharField(max_length=128)
     last_name = forms.CharField(max_length=128)
+    captcha = ReCaptchaField(
+        public_key=settings.RECAPTCHA_SITE_KEY,
+        private_key=settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+        widget= ReCaptchaV2Checkbox(
+            api_params={
+                'hl': 'pl',
+            }
+        ),
+        error_messages={
+            'required': 'Attention please, chaptcha!!'
+        }
+    )
 
     class Meta:
         model = User

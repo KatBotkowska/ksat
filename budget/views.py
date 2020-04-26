@@ -637,9 +637,6 @@ class UserRegistrationView(View):
                     return redirect('budget:index')
         return render(request, self.template_name, {'form': form})
 
-def _validate_recaptcha(token, ip):
-    pass
-
 
 class LoginView(LoginView):
     template_name = 'budget/login.html'
@@ -650,17 +647,6 @@ class LoginView(LoginView):
         self.success_url = reverse('budget:index')
         return self.success_url
 
-
-    def get_form_valid(self, form):
-        request_body = self.request.POST
-        if not request_body:
-            return None
-
-        recaptcha_token = request_body['g-recaptcha-response']
-        ip_addr, _ = get_client_ip(self.request)
-        if not _validate_recaptcha(recaptcha_token, ip_addr):
-            return redirect('budget:login')
-        return super().form_valid(form)
 
 
 class LogoutView(LogoutView):

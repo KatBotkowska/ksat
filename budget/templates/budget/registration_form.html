@@ -10,6 +10,9 @@
     <form action="" method="post">
     {% csrf_token %}
         {{ form.as_p }}
+        {#  {{ form.captcha }}#}
+{# <script src='https://www.google.com/recaptcha/api.js'></script> #}
+{# <div class="g-recaptcha" data-sitekey="6LcK4-oUAAAAAHaOezhMtWhq-xE-CmcEyC60y7Kw"></div> #}
     <div><input type="submit" value="Add user"></div>
     </form>
 {% endblock %}

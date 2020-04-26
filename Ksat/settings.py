@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'budget',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -136,6 +137,7 @@ STATICFILES_DIRS = (
 GOOGLE_RECAPTCHA_SECRET_KEY =config('SECRET_RECAPTCHA')
 RECAPTCHA_SITE_KEY = config('SECRET_RACAPTCHA_SITE_KEY')
 RECAPTCHA_USE_SSL = True
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 USE_L10N = True
 USE_THOUSAND_SEPARATOR = True
