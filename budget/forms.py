@@ -370,9 +370,4 @@ class UserForm(UserCreationForm):
         except User.DoesNotExist:
             return username
         raise ValidationError('Username already exists')
-    # def clean_email(self):
-    #     cd = super().clean()
-    #     email = cd.get('email')
-    #     validate =validate_email()
-    #     if validate(email) == False:
-    #         raise ValidationError('niepoprawny adres email')
+
